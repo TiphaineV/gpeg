@@ -42,9 +42,7 @@ class UserNode(__Node):
         pass
 
     def __str__(self)->str:
-        ''' Not implemented yet'''
         return 'id: {}, degree: {}, avgRating: {} \n ratings: \n {} tags: \n {}'.format(self.nodeId, self.degree, self.avgRating, self.ratings, self.tags)
-        pass
 
     def set_ratings_from_db(self):
         '''
