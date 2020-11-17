@@ -1,6 +1,9 @@
 #%% Modules
 #standard
 import collections
+import numpy as np
+import numpy.random as rd
+import matplotlib.pyplot as plt
 
 #personal
 from node import UserNode, MovieNode
@@ -12,23 +15,23 @@ class RecSystem1(Graph):
     def __init__(self):
         super().__init__()
         pass
-    
-    def similar_users(self,userId: int, threshold: int)->set:
-        userRatings = self.get_userNode(userId).ratings
+    def similarity_score(self, user: UserNode , simUser: UserNode)->float:
+        try:
+            return len(set(simUser.ratings.keys()).difference(set(user.ratings.keys()))) / len(user.ratings)
+        except ZeroDivisionError:
+            print('user has no rating')
+            raise
+    def similar_users(self,userId: int, threshold: float)->set:
+        user = self.get_userNode(userId)
         simUsersId = set()
         for simUser in self.userNodes:
             if simUser.nodeId != userId:
-                try:
-                    score = len(set(simUser.ratings.keys()).difference(set(userRatings.keys()))) / len(userRatings)
-                except TypeError:
-                    print(userRatings)
-                    print('User Id: ', userId)
-                    print(str(simUser))
+                score = self.similarity_score(user,simUser)
                 if score > threshold:
                     simUsersId.add(simUser.nodeId)
         return simUsersId
     
-    def recommend_movie(self,userId: int, threshold: int)->(MovieNode,int):
+    def recommend_movie(self,userId: int, threshold: float)->(MovieNode,int):
         '''
         recommend most watched movies of similar users not already seen
         '''
@@ -44,9 +47,47 @@ class RecSystem1(Graph):
         return self.get_movieNode(recMovieId), nbRec
     pass
 
+class ResultsRS1:
+    def __init__(self):
+        self.userId = 50
+        self.rs1 = RecSystem1()
+
+    def show_similar_users(self, threshold: float):
+        userId = self.userId
+        rs1 = self.rs1
+
+        # -- Retrieving some similar users
+        user = rs1.get_userNode(userId)
+        simUsers = list(rs1.similar_users(userId, threshold))
+        simUser1 = rs1.get_userNode(rd.choice(simUsers))
+        simUser2 = rs1.get_userNode(rd.choice(simUsers))
+        simUser3 = rs1.get_userNode(rd.choice(simUsers))
+
+        # -- Displaying results in the console
+        print('User {}'.format(userId))
+        print(str(UserNode(userId)))
+        print('Some users similar to the candidate: \n')
+        print(str(simUser1) + '\n sim. score: ' + str(rs1.similarity_score(user,simUser1))[:3])
+        print(str(simUser2) + '\n sim. score: ' + str(rs1.similarity_score(user,simUser2))[:3])
+        print(str(simUser3) + '\n sim. score: ' + str(rs1.similarity_score(user,simUser3))[:3])
+        pass
+
+    def show_threshold_influence(self):
+        thrValues = np.arange(0.2,1,0.1)
+        for threshold in thrValues:
+            plt.figure('Users similar to {} for thr = {}'.format(self.userId,str(threshold)[:3]))
+            plt.hist(self.rs1.similar_users(self.userId,threshold),bins = 1000)
+            plt.show()
+        pass
+
+    def show_recommended_movie(self, userId: int, threshold:float):
+        movie, nbRec = self.rs1.recommend_movie(userId = userId, threshold = threshold)
+        print('Recommended movie')
+        print(str(movie))
+        print('Number of rec', nbRec)
+        pass
 if __name__ == '__main__':
-    recSyst = RecSystem1()
-    movie, nbRec = recSyst.recommend_movie(userId = 2, threshold = 0.2)
-    print('Recommended movie')
-    print(str(movie))
-    print('Number of rec', nbRec)
+    res = ResultsRS1()
+    res.show_recommended_movie(50,0.9)
+    res.show_threshold_influence()
+
