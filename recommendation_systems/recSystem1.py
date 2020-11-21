@@ -1,3 +1,8 @@
+'''
+First Recommendation System.
+    Works in two times: first we get similar users (using Jaccard Similarity), then among the movies seen by these users, 
+    we pick the most watched and recommend it.
+'''
 #%% Modules
 #standard
 import collections
