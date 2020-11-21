@@ -1,3 +1,10 @@
+'''
+Graph Class.
+    Creates all User Nodes and Movie Nodes from the dataset and stores them as lists. 
+    Some display methods are also implemented to get an idea of the distribution of some nodes properties (degree, average Rating)
+    Recommender systems should inherit the Graph Class.
+'''
+
 #%% Modules
 # standard
 import time
