@@ -1,3 +1,7 @@
+'''
+Shared data between all files. 
+You might have to change the relative link to the dataset.
+'''
 #%% Modules
 import pandas as pd
 
