@@ -7,7 +7,7 @@ The goal of this project is to develop an accurate movie/books recommender syste
 ## Data sets 
 
 Goodreads : https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/books
-\n MovieLens : https://grouplens.org/datasets/movielens/
+MovieLens : https://grouplens.org/datasets/movielens/
 
 ## Graph Structure
 
