@@ -44,7 +44,9 @@ class Graph:
         movieNodes = []
         movieIds = self.movieIds
         for movieId in movieIds:
-            movieNodes.append(MovieNode(movieId))
+            movieNode = MovieNode(movieId)
+            if movieNode.ratings != None: #0 degree nodes not taken into account
+                movieNodes.append(MovieNode(movieId))
 
         print('Done ({} s.)'.format(int(time.time() - t0)))
         self.movieNodes = movieNodes
@@ -108,3 +110,6 @@ class Graph:
         plt.show()
         pass
     pass
+
+if __name__ == '__main__':
+    graph = Graph()
