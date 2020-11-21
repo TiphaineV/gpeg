@@ -55,7 +55,11 @@ class UserNode(__Node):
         {movieId : userRating}
         '''
         userRatings = ratings[ratings['userId'] == self.nodeId][['movieId','rating']]
-        self.ratings = dict({ userRatings['movieId'].iloc[k] : userRatings['rating'].iloc[k] for k in range(len(userRatings))})
+        links = dict({ userRatings['movieId'].iloc[k] : userRatings['rating'].iloc[k] for k in range(len(userRatings))})
+        if links == {}:
+            self.ratings = None
+        else:
+            self.ratings = links
         pass
 
     def set_tags_from_db(self):
@@ -73,6 +77,9 @@ class UserNode(__Node):
     def set_avgRating(self):
         self.avgRating = sum(self.ratings.values())/len(self.ratings)
         pass
+
+    def get_seenMovies(self)->list:
+        return list(self.ratings.keys())
     pass
 
 class MovieNode(__Node):
@@ -103,7 +110,11 @@ class MovieNode(__Node):
 
     def set_ratings_from_db(self):
         movieRatings = ratings[ratings['movieId'] == self.nodeId][['userId','rating']]
-        self.ratings = dict({ movieRatings['userId'].iloc[k] : movieRatings['rating'].iloc[k] for k in range(len(movieRatings)) })
+        links = dict({ movieRatings['userId'].iloc[k] : movieRatings['rating'].iloc[k] for k in range(len(movieRatings)) })
+        if links == {}:
+            self.ratings = None
+        else:
+            self.ratings = links
         pass
 
     def set_tags_from_db(self)->set:
@@ -113,15 +124,23 @@ class MovieNode(__Node):
 
     def set_avgRating(self):
         # some movies are not rated
-        if len(self.ratings)>0:
+        if self.ratings != None:
             try:
                 self.avgRating = sum(self.ratings.values())/len(self.ratings)
             except ZeroDivisionError:
                 print('len ratings is zero')
                 print(str(self))
+        else:
+            self.avgRating = None
         pass
     def set_degree(self):
-        self.degree = len(self.ratings)
+        if self.ratings == None:
+            self.degree = 0
+        else:
+            self.degree = len(self.ratings)
+
+    def get_avgRating(self):
+        return self.avgRating
     pass
 
 if __name__ == '__main__':
