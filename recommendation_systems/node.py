@@ -1,3 +1,9 @@
+'''
+Nodes Classes
+    A Node Class (User Node, Movie Node, Book Node, ...) should inherit the abstract _Node Class. 
+    A Node Class stores as a dict its links with other vertices (the graph edges). 
+'''
+
 #%% Modules
 # standard
 from abc import ABC, abstractmethod
