@@ -1,3 +1,8 @@
+'''
+Second recommender system.
+    Similar to the first one, except this time we pick the best rated movie 
+    among the ones seen by similar users.
+'''
 #%% Modules
 #standard
 import collections
