@@ -1,15 +1,9 @@
-'''
-Graph Class.
-    Creates all User Nodes and Movie Nodes from the dataset and stores them as lists. 
-    Some display methods are also implemented to get an idea of the distribution of some nodes properties (degree, average Rating)
-    Recommender systems should inherit the Graph Class.
-'''
-
 #%% Modules
 # standard
 import time
 import pandas as pd
 import numpy as np
+from types import GeneratorType
 # personal
 from context import ratings, movies, tags
 from node import UserNode, MovieNode
@@ -73,6 +67,35 @@ class Graph:
             raise
         pass
 
+    def get_nbEdges(self) -> int:
+        '''
+        returns the number of edges in the graph
+        '''
+        return sum( userNode.degree for userNode in self.userNodes )
+
+    def get_genEdges(self)->GeneratorType:
+        '''
+        makes a generator that yields the graph edges
+
+        Returns
+        -------
+            generator data of form (userId, movieId, movieRating)
+        '''
+        return ( (userNode.nodeId, key, userNode.ratings[key])
+                    for userNode in self.userNodes
+                    for key in userNode.ratings.keys() )
+
+    def get_Edges(self)->list:
+        '''
+        Returns
+        -------
+            graph edges as a list. (userId, movieId, movieRating)
+        '''
+
+        return [ (userNode.nodeId, key, userNode.ratings[key])
+                    for userNode in self.userNodes
+                    for key in userNode.ratings.keys() ]
+
     # -- Display methods
     def display_users_degree_dst(self, bins = 50, degRange = (0,500)):
         '''
@@ -113,3 +136,5 @@ class Graph:
 
 if __name__ == '__main__':
     graph = Graph()
+    print(next(iter(graph.get_genEdges())))
+
