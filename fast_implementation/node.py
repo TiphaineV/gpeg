@@ -33,6 +33,8 @@ class _Node(ABC):
 
     @classmethod
     def set_graph(cls, graph):
+        '''every node needs to have the same reference to the graph
+        '''
         cls.graph = graph
         pass
 
@@ -55,6 +57,9 @@ class _Node(ABC):
         return len(self.idxEdges)
 
     def get_edges(self, group):
+        '''get the edges of the graph from a certain group. 
+        Atm group are sets when a split is done. So group can be either 'train' or 'test'.
+        '''
         edges = self.graph.edges
         return [edges[idx] for idx in self.idxEdges if edges[idx].group == group]
     pass
@@ -69,6 +74,8 @@ class UserNode(_Node):
         return {edges[idx].movieId : edges[idx].rating for idx in self.idxEdges}
 
     def get_likes(self):
+        '''get the movies that the user likes. It is controled by the HP likeThr.
+        '''
         edges = self.graph.edges
         return [edges[idx].movieId for idx in self.idxEdges if edges[idx].rating >= likeThr]
 
