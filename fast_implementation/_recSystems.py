@@ -6,7 +6,7 @@ Inspired by sklearn _base.py
 #standard
 from abc import ABC, abstractmethod
 import numpy as np
-from types import GeneratorType
+from typing import final
 
 #personal
 from node import UserNode, MovieNode
@@ -50,18 +50,27 @@ class _Clf(_RecSystem):
         pass
 
     def fit(self, edges):
+        '''fits the model to a subset of the graph edges (training edges for ex.)
+        '''
         pass
 
 
     @abstractmethod
-    def predict(self, userIds: np.array, nRec=1)->np.array:
-        '''
+    def predict(self, userIds, nRec=1)->np.array:
+        '''recommends nRec movies to each user. 
+        Parameters
+        -------
+            userIds : np.array or dict
+                Providing  a dict of form {id : UserNode(id)} as given by the graph
+                should be possible.
+    
         Returns
         -------
-            np.array of shape (nUsers, nRec)
+            np.array of shape (nUsers, nRec) containing the ids of the predictions.
         '''
         pass
-
+    
+    @final # this method should not be overriden
     def score(self, userNodes : dict, nRec:int, metric= 'precision')-> float:
         '''Not implemented properly
         metric can be precision, recall or f1-score
