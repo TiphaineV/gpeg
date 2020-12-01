@@ -1,5 +1,5 @@
 '''
-Makes the graph, quickly
+Builds the graph, quickly
 '''
 
 #%% Modules
