@@ -1,5 +1,5 @@
 '''
-run little tests here
+What should look like training + testing
 '''
 # standard 
 import numpy as np
