@@ -1,5 +1,15 @@
 '''
 Builds the graph, quickly
+
+Implementation
+---------
+    The idea is to go through the data only once, and from each row to build an edge. 
+    The graph stores all these edges, and is kept as a reference for all the nodes. 
+    The nodes don't store the edges, but only keep references to it. 
+    If you need the user nodes or the movie nodes, the graph ties the edges to the nodes and 
+    returns it fastly when you call the appropriate method.
+    Now, why it has been done this way, is because it makes it easy to split the graph (cf
+    FastGraph.train_test_split) : you can chose to use only a subset of the edges to tie to the nodes.
 '''
 
 #%% Modules
