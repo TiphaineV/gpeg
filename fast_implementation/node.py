@@ -9,7 +9,7 @@ from functools import reduce
 from edge import Edge
 
 #%% Hyperparameter
-likeThr = 4.0
+likeThr = 3.0
 
 #%% Node classes
 class _Node(ABC):
@@ -31,6 +31,18 @@ class _Node(ABC):
         self.idxEdges.append(idxEdge)
         pass
 
+    def hide(self, nHide):
+        '''randomly hides nHide edges of the node
+
+        Returns
+        -------
+            The hidden edges as a list
+        '''
+        idxEdges = self.idxEdges
+        rd.shuffle(idxEdges)
+        return self.graph.hide_edges(idxEdges[:nHide])
+
+
     @classmethod
     def set_graph(cls, graph):
         '''every node needs to have the same reference to the graph
@@ -50,14 +62,14 @@ class _Node(ABC):
     def get_avgRating(self):
         edges = self.graph.edges
         degree = self.get_degree()
-        avgRating = 0 if degree ==0 else sum(edges[idx].rating for idx in self.idxEdges) / degree
+        avgRating = 0 if degree == 0 else sum(edges[idx].rating for idx in self.idxEdges) / degree
         return avgRating
 
     def get_degree(self):
         return len(self.idxEdges)
 
     def get_edges(self, group):
-        '''get the edges of the graph from a certain group. 
+        '''edges of the graph from a certain group. 
         Atm group are sets when a split is done. So group can be either 'train' or 'test'.
         '''
         edges = self.graph.edges
@@ -68,16 +80,68 @@ class UserNode(_Node):
     def __init__(self, nodeId: int):
         super().__init__(nodeId)
         pass
-    
-    def get_ratings(self):
+
+    def __str__(self):
+        return str(self.get_labels())
+
+
+    def hide_labels(self, nHide)-> list:
+        '''hides randomly some labels of the node.
+
+        Returns
+        -------
+            The hidden edges as a list
+        '''
+        idxLabels = self._get_idxLabels()
+        rd.shuffle(idxLabels)
+        return self.graph.hide_edges(idxLabels[:nHide])
+
+    def _get_idxLabels(self)->list:
+        '''Among the references to the edges in the graph, returns the ones that 
+        points towards liked movies, which are the labels of the rec system seen as
+        a classifier. Hidden links are not returned.
+        '''
+        edges = self.graph.edges
+        return [idx for idx in self.idxEdges if edges[idx].rating >= likeThr and not(edges[idx].hidden)]
+
+    def get_ratings(self)->dict:
+        '''movie ratings
+        '''
         edges = self.graph.edges
         return {edges[idx].movieId : edges[idx].rating for idx in self.idxEdges}
 
-    def get_likes(self):
-        '''get the movies that the user likes. It is controled by the HP likeThr.
+    def get_labels(self)->list:
+        '''movies that the user likes. These are the labels of the user if you think
+        of a recommendation system as a classifier. It is controled by the HP likeThr.
         '''
         edges = self.graph.edges
-        return [edges[idx].movieId for idx in self.idxEdges if edges[idx].rating >= likeThr]
+        idxLabels = self._get_idxLabels()
+        return [edges[idx].movieId for idx in idxLabels]
+
+    def get_nLabels(self)->int:
+        '''number of labels
+        '''
+        return len(self.get_labels())
+
+    def get_hidden(self)->list:
+        '''hidden edges
+        '''
+        edges = self.graph.edges
+        idxEdges = self.idxEdges
+        return [(edges[idx].movieId, edges[idx].hidden) for idx in idxEdges if edges[idx].hidden]
+
+    def get_nHidden(self)->int:
+        '''number of hidden edges
+        '''
+        return len(self.get_hidden())
+
+    def get_pHidden(self)->float:
+        '''proportion of hidden edges
+        '''
+        if self.get_degree() !=0:
+            return self.get_nHidden() / self.get_degree()
+        else:
+            return np.nan
 
     pass
 
