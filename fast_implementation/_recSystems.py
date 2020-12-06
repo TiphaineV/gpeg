@@ -6,12 +6,10 @@ Inspired by sklearn _base.py
 #standard
 from abc import ABC, abstractmethod
 import numpy as np
-from typing import final
 
 #personal
 from node import UserNode, MovieNode
-from graph import Graph
-from context import ratings, movies, tags
+from context import userData
 
 
 #%% Trivial Recommandation System
@@ -27,12 +25,9 @@ class _RecSystem(ABC):
         pass
 
     @abstractmethod
-    def predict(self, userIds: np.array)-> np.array:
+    def predict(self, userIds: np.array, *args)-> np.array:
         pass
-
-    @abstractmethod
-    def score(self, userIds: np.array, yTrue: np.array):
-        pass
+    pass
 
 
 
@@ -40,59 +35,34 @@ class _Clf(_RecSystem):
     '''
     Classifier recommendation system
     '''
-    metrics = {
-        'precision' : None,
-        'recall' : None,
-        'f1-score' : None
-    }
     def __init__(self):
         super().__init__()
         pass
 
-    def fit(self, edges):
-        '''fits the model to a subset of the graph edges (training edges for ex.)
-        '''
-        pass
-
-
     @abstractmethod
-    def predict(self, userIds, nRec=1)->np.array:
-        '''recommends nRec movies to each user. 
+    def predict(self, edges, nRec, nHidden = -1)->np.array:
+        '''recommends nRec movies to each user whose id is in the edges
+        
         Parameters
         -------
             userIds : np.array or dict
                 Providing  a dict of form {id : UserNode(id)} as given by the graph
                 should be possible.
-    
+
+            nRec: int
+                number of recommendations the clf should do.
+
+            nHidden: int
+                useful for scoring. Default value should not be changed
+
         Returns
         -------
-            np.array of shape (nUsers, nRec) containing the ids of the predictions.
+            (pred, userKeys) : tuple
+                pred: np.array of shape (nUsers, nRec)
+                    containing the ids of the predictions
+                userKeys: list
+                    id of the users in edges. In ascending order.
+                    (will be compared when scoring)
         '''
         pass
-    
-    @final # this method should not be overriden
-    def score(self, userNodes : dict, nRec:int, metric= 'precision')-> float:
-        '''Not implemented properly
-        metric can be precision, recall or f1-score
-        '''
-        yPred = self.predict(userNodes, nRec) # dim nUsers, nRec
-        movies = list(userNodes.values())
-        yTrue = [movie.get_likes() for movie in movies]
-
-        # -- precision, only one working atm + not efficient
-        count = 0
-        for row, likes in enumerate(yTrue):
-            for like in likes:
-                if like in yPred[row]:
-                    count +=1
-                    break
-        return count / len(yPred)
-
-
-        '''
-        # what it should look like after
-
-        scoreFunc = metrics[metric]
-        return scoreFunc(yPred,yTrue)
-        '''
     pass
