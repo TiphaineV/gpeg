@@ -10,24 +10,28 @@ from node import UserNode, MovieNode
 from fastGraph import FastGraph
 from context import userData
 from trivialClf import TrivialClf
+from scorer import ClfScorer
 
 
 def main():
+    # -- Parameters
+    nRec = 7 # number of recommendation the recommender system should make
+    alpha = 0.7 # test proportion in the split
+    nLabels = 5
+    degreeEx = 2
+
     # -- Graph construction + train_test_split
     graph = FastGraph()
-    trainEdges, testEdges = graph.train_test_split(alpha = 0.2)
+    trainEdges, testEdges = graph.train_test_split(alpha= alpha)
 
-    # -- Classification Rec system + fit
+
+    # -- Fitting recommender system
     clf = TrivialClf()
     clf.fit(trainEdges)
 
-    # -- Prediction
-    testUsers = FastGraph.group_by_user(testEdges)
-    pred = clf.predict(testUsers,nRec=3)
-    print('Predictions: \n', pred)
-
     # -- Scoring
-    score = clf.score(testUsers, nRec=3)
+    scorer = ClfScorer(graph)
+    score = scorer.score(clf, testEdges, nRec, nLabels, degreeEx= degreeEx)
     print(score)
 
     pass
