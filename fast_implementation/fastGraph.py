@@ -94,7 +94,7 @@ class _Graph(ABC):
             return {idd : userNodes[idd] for idd in ids
                                              if userNodes[idd].get_degree() >= degreeMin
                                              if userNodes[idd].get_nLabels() >= nLabelsMin
-                                             if userNodes[idd].get_hidden() == nHidden
+                                             if userNodes[idd].get_nHidden() == nHidden
                                              }
 
     @classmethod
