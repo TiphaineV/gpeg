@@ -25,7 +25,7 @@ class _RecSystem(ABC):
         pass
 
     @abstractmethod
-    def predict(self, userIds: np.array, *args)-> np.array:
+    def predict(self, edges, *args)-> np.array:
         pass
     pass
 
@@ -45,9 +45,9 @@ class _Clf(_RecSystem):
         
         Parameters
         -------
-            userIds : np.array or dict
-                Providing  a dict of form {id : UserNode(id)} as given by the graph
-                should be possible.
+            edges : list
+                edges of the sub-graph you consider for the prediction.
+                Can be grouped easily by user using FastGraph.group_by_user
 
             nRec: int
                 number of recommendations the clf should do.
