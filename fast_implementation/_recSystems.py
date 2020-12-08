@@ -25,7 +25,7 @@ class _RecSystem(ABC):
         pass
 
     @abstractmethod
-    def predict(self, edges, *args)-> np.array:
+    def predict(self, edges, *args):
         pass
     pass
 
@@ -40,7 +40,7 @@ class _Clf(_RecSystem):
         pass
 
     @abstractmethod
-    def predict(self, edges, nRec, nHidden = -1)->np.array:
+    def predict(self, edges, nRec, nHidden = -1):
         '''recommends nRec movies to each user whose id is in the edges
         
         Parameters
