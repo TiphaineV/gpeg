@@ -40,29 +40,18 @@ class _Clf(_RecSystem):
         pass
 
     @abstractmethod
-    def predict(self, edges, nRec, nHidden = -1):
-        '''recommends nRec movies to each user whose id is in the edges
+    def predict(self, edges):
+        '''predicts if the user likes the movie, without looking at the score of the edge.
         
         Parameters
         -------
             edges : list
                 edges of the sub-graph you consider for the prediction.
-                Can be grouped easily by user using FastGraph.group_by_user
-
-            nRec: int
-                number of recommendations the clf should do.
-
-            nHidden: int
-                useful for scoring. Default value should not be changed
 
         Returns
         -------
-            (pred, userKeys) : tuple
-                pred: np.array of shape (nUsers, nRec)
-                    containing the ids of the predictions
-                userKeys: list
-                    id of the users in edges. In ascending order.
-                    (will be compared when scoring)
+            pred: np.array of shape (nUsers,)
+                containing the predictions (0 or 1) in the same order
         '''
         pass
     pass

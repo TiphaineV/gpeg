@@ -15,10 +15,7 @@ from scorer import ClfScorer
 
 def main():
     # -- Parameters
-    nRec = 7 # number of recommendation the recommender system should make
     alpha = 0.7 # test proportion in the split
-    nLabels = 5
-    degreeEx = 2
 
     # -- Graph construction + train_test_split
     graph = FastGraph()
@@ -30,9 +27,8 @@ def main():
     clf.fit(trainEdges)
 
     # -- Scoring
-    scorer = ClfScorer(graph)
-    score = scorer.score(clf, testEdges, nRec, nLabels, degreeEx= degreeEx)
-    print(score)
+    scorer = ClfScorer()
+    score = scorer.score(clf, testEdges)
 
     pass
 

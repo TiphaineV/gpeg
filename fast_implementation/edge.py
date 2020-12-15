@@ -14,3 +14,9 @@ class Edge:
     def hide(self):
         self.hidden = True
         pass
+
+    def get_userId(self):
+        return self.userId
+
+    def get_movieId(self):
+        return self.movieId

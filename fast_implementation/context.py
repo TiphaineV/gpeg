@@ -2,13 +2,16 @@
 import pandas as pd
 from functools import reduce
 
+#%% Like Threshold
+likeThr = 3.0
+
 #%% Aggregation functions
 def agg_as_list(series: pd.Series):
     return [series.iloc[k] for k in range(len(series))]
 
 #%% Processing Data : merging ratings and movies into userData variable shared accross all files
 # -- change the filePath here
-filePath =  "../ml-latest-small/" 
+filePath =  "../../ml-latest-small/" 
 
 # -- reading data
 ratings = pd.read_csv(filePath + "ratings.csv")

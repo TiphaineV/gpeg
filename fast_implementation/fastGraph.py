@@ -46,99 +46,54 @@ class _Graph(ABC):
         '''
         pass
 
-    def hide_edges(self, indices:list)->list:
-        '''hides edges of the graph whose index is in indices input
-        '''
-        hiddenEdges = []
-        for idx in indices:
-            self.edges[idx].hide()
-            hiddenEdges.append(self.edges[idx])
-        return hiddenEdges
-
-    def unhide_edges(self):
-        '''sets hidden attribute of the edges of the graph to false
-        '''
-        edges = self.edges
-        for edge in edges:
-            edge.hidden = False
-        pass
-
-
     @classmethod
-    def group_by_user(cls, edges, nLabelsMin=0, degreeMin= 1, nHidden= -1)->dict:
-        '''ties the provided edges to the user Nodes
-        can be called by other classes
+    def group_by(cls, method, edges, degreeMin=1):
+        '''ties the provided edges to the nodes
         '''
-        # -- getting all user nodes
-        userNodes = {}
+        user = method is Edge.get_userId
+        # -- getting all nodes
+        nodes = {}
         for idx, edge in enumerate(edges):
-            userId = edge.userId
+            idd = method(edge)
 
             # -- add the node to the dict if it doesn't exist
             try:
-                userNodes[userId].add(idx)
+                nodes[idd].add(idx)
             except KeyError:
-                node = UserNode(userId)
+                if user:
+                    node = UserNode(idd)
+                else:
+                    node = MovieNode(idd)
                 node.add(idx)
-                userNodes.update({userId : node})
+                nodes.update({idd : node})
 
-        # -- keeping only those within a certain range of degree and nLabel
-        #    sometimes (scoring), we also want the nodes with a certain amount of hidden edges. 
-        ids = userNodes.keys()
-        if nHidden == -1:
-            return {idd : userNodes[idd] for idd in ids
-                                             if userNodes[idd].get_degree() >= degreeMin
-                                             if userNodes[idd].get_nLabels() >= nLabelsMin
-                                             }
-        else:
-            return {idd : userNodes[idd] for idd in ids
-                                             if userNodes[idd].get_degree() >= degreeMin
-                                             if userNodes[idd].get_nLabels() >= nLabelsMin
-                                             if userNodes[idd].get_nHidden() == nHidden
-                                             }
+        # -- keeping only those within a certain range of degree
+        ids = nodes.keys()
+        return {idd : nodes[idd] for idd in ids
+                                         if nodes[idd].get_degree() >= degreeMin
+                                         }
+
+    @classmethod
+    def group_by_user(cls, edges, degreeMin= 1)->dict:
+        '''ties the provided edges to the user Nodes
+        '''
+        method = Edge.get_userId
+        return cls.group_by(method, edges, degreeMin)
+
 
     @classmethod
     def group_by_movie(cls, edges, degreeMin= 1)->dict:
         '''ties the provided edges to the movie Nodes
-        can be called by other classes. Similar to group_by_user
         '''
-        movieNodes = {}
-        for idx, edge in enumerate(edges):
-            movieId = edge.movieId
-            try:
-                movieNodes[movieId].add(idx)
-            except KeyError:
-                node = MovieNode(movieId)
-                node.add(idx)
-                movieNodes.update({movieId : node})
+        method = Edge.get_movieId
+        return cls.group_by(method, edges, degreeMin)
 
-        # -- keeping only those with degree > degreeMin
-        ids = movieNodes.keys()
-        return {idd : movieNodes[idd] for idd in ids 
-                                      if movieNodes[idd].get_degree() >= degreeMin}
-    
     def get_edges(self, group = 'all'):
         if group == 'all':
             return self.edges
         else:
             edges = self.edges
             return [edge for edge in edges if edge.group == group]
-
-
-
-
-    def get_movieNodes(self, degreeMin= 1, group= 'all'):
-        '''returns the movieNodes
-        '''
-        edges = self.get_edges(group)
-        return group_by_movie(edges, degreeMin)
-
-    def get_userNodes(self, nLabelMin=0, degreeMin= 1, group= 'all'):
-        '''returns the userNodes
-        '''
-        edges = self.get_edges(group)
-        return group_by_user(edges, nLabelMin, degreeMin)
-
     pass
 
 class FastGraph(_Graph):
