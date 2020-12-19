@@ -58,7 +58,8 @@ class ClfScorer(_Scorer):
         '''
         yPred = clf.predict(edges)
         yTrue = np.array([edge.rating > likeThr for edge in edges]).astype('uint8')
-
+        print(np.sum(yPred))
+        print(np.sum(yTrue))
         print(classification_report(yTrue, yPred, target_names = ['class 0', 'class 1']))
 
         if metric == 'precision':

@@ -3,6 +3,7 @@ What should look like training + testing
 '''
 # standard 
 import numpy as np
+import time
 
 # personal
 from _recSystems import _Clf
@@ -13,12 +14,15 @@ from trivialClf import TrivialClf
 from scorer import ClfScorer
 
 
+
 def main():
     # -- Parameters
     alpha = 0.7 # test proportion in the split
+    t0 = time.time()
 
     # -- Graph construction + train_test_split
     graph = FastGraph()
+    print('Graph Construction:', time.time() - t0)
     trainEdges, testEdges = graph.train_test_split(alpha= alpha)
 
 
