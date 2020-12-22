@@ -113,9 +113,10 @@ class FastGraph(_Graph):
             # -- getting ids, ratings, tags from DB
             userId, movieId= row['userId'], row['movieId']
             rating, tags = row['rating'], row['tag']
+            timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
 
             # -- updating edge list, and keeping all id values
-            edges.append(Edge(userId, movieId, rating, tags))
+            edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
             movieIds.add(movieId)
             userIds.add(userId)
 

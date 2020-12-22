@@ -25,7 +25,6 @@ def main():
     print('Graph Construction:', time.time() - t0)
     trainEdges, testEdges = graph.train_test_split(alpha= alpha)
 
-
     # -- Fitting recommender system
     clf = TrivialClf()
     clf.fit(trainEdges)

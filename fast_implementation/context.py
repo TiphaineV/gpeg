@@ -27,7 +27,6 @@ tags = tags.groupby(col, as_index = False).agg(agg_as_list)
 # -- merging. keeping keys from rating, but bear in mind that some movies are tagged but do not appear in ratings.csv
 userData = pd.merge(ratings, tags, on= ['userId','movieId'], suffixes= ('_rating','_tag'), how='left')
 
-
 # -- basic tests
 assert(type(tags['tag'][0]) == list and type(tags['timestamp'][0]) == list) #tester la correspondance si possible aussi
 assert(len(userData) == len(ratings))

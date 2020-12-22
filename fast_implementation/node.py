@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import numpy.random as rd
 from functools import reduce
+import numpy as np
 
 #personal
 from edge import Edge
@@ -54,10 +55,20 @@ class _Node(ABC):
     def get_ratings(self):
         return 
 
+    @abstractmethod
     def get_tags(self):
+        return
+
+    def all_tags(self):
         edges = self.graph.edges
         tagList = [ edges[idx].tag for idx in self.idxEdges ] 
         return reduce(lambda x,y : x + y, tagList)
+
+    @abstractmethod
+    def get_features(self, fncts: list):
+        '''Extract features from the node
+        '''
+        return
 
     def get_avgRating(self):
         edges = self.graph.edges
@@ -108,7 +119,19 @@ class UserNode(_Node):
         '''movie ratings
         '''
         edges = self.graph.edges
-        return {edges[idx].movieId : edges[idx].rating for idx in self.idxEdges}
+        return [(edges[idx].movieId, edges[idx].rating) for idx in self.idxEdges]
+
+    def get_timeRtg(self):
+        edges = self.graph.edges
+        return [(edges[idx].movieId, edges[idx].timeRtg) for idx in self.idxEdges]
+
+    def get_tags(self):
+        edges = self.graph.edges
+        return [(edges[idx].movieId, edges[idx].tags) for idx in self.idxEdges]
+
+    def get_timeTags(self):
+        edges = self.graph.edges
+        return [(edges[idx].movieId, edges[idx].timeTags) for idx in self.idxEdges]
 
     def get_labels(self)->list:
         '''movies that the user likes. These are the labels of the user if you think
@@ -143,6 +166,16 @@ class UserNode(_Node):
         else:
             return np.nan
 
+    def get_features(self, fncts):
+        '''returns user node features
+        '''
+        # -- Getting User Data
+        ratings = self.get_ratings()
+        tags = self.get_tags()
+        timeRtg = self.get_timeRtg()
+        timeTags = self.get_timeTags()
+
+        return np.array([fncts[k](ratings, tags, timeRtg, timeTags) for k in range(len(fncts))])
     pass
 
 class MovieNode(_Node):
@@ -152,5 +185,46 @@ class MovieNode(_Node):
 
     def get_ratings(self):
         edges = self.graph.edges
-        return {edge[idx].userId : edge[idx].ratings for idx in self.idxEdges}
+        return [(edges[idx].userId, edges[idx].rating) for idx in self.idxEdges]
+
+    def get_timeRtg(self):
+        edges = self.graph.edges
+        return [(edges[idx].userId, edges[idx].timeRtg) for idx in self.idxEdges]
+
+    def get_tags(self):
+        edges = self.graph.edges
+        return [(edges[idx].userId, edges[idx].tags) for idx in self.idxEdges]
+
+    def get_timeTags(self):
+        edges = self.graph.edges
+        return [(edges[idx].userId, edges[idx].timeTags) for idx in self.idxEdges]
+
+    def get_genre(self):
+        '''Not implemented for now
+        '''
+        return None
+
+    def get_imdb(self):
+        '''Not implemented for now
+        '''
+        return None
+
+    def get_features(self, fncts: list):
+        '''returns movie node features
+        BEING IMPLEMENTED
+        '''
+        # -- Gathering User Opinion
+        ratings = self.get_ratings()
+        tags = self.get_tags()
+        timeRtg = self.get_timeRtg()
+        timeTags = self.get_timeTags()
+
+        # -- Getting Movie Data
+        genre = self.get_genre()
+        imdb = self.get_imdb()
+
+        return np.array([fncts[k](ratings, tags, timeRtg, timeTags, genre, imdb) for k in range(len(fncts))])
+
+
+
     pass
