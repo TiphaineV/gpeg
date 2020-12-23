@@ -82,8 +82,11 @@ class TestClf(_Clf):
         def movie_is_tag(ratings, tags, timeRtg, timeTags, genre, imdb):
             return float(any([len(tpl[1])>0 for tpl in tags]))
 
+        def edge_rating(rating, tags, timeRtg, timeTags):
+            return rating
+
         self.featFncts = {'user': [user_average_rating, user_is_tag],
-                      'edge': [],
+                      'edge': [edge_rating],
                       'movie': [movie_average_rating, movie_is_tag]
                       }
         pass
@@ -109,18 +112,19 @@ class TestClfFeature(unittest.TestCase):
 
     def test_feature_matrix(self):
         X = self.clf._get_feature_matrix(self.graph.edges)
-        xTrue = np.array([0.,  0.,  0.5, 1.,
-                            0.,  0.,  1.,  1.,
-                            0.,  0.,  1.5, 1.,
-                            0.,  0.,  2.,  1.,
-                            0.,  0.,  2.5, 1.,
-                            3.,  1.,  0.5, 1.,
-                            3.,  1.,  1.,  1.,
-                            3.,  1.,  1.5, 1.,
-                            3.,  1.,  2.,  1.,
-                            3.,  1.,  2.5, 1. ]).reshape(10,4)
+        print(X)
+        xTrue = np.array([0.,  0., 0., 0.5, 1.,
+                            0.,  0., 0., 1.,  1.,
+                            0.,  0., 0., 1.5, 1.,
+                            0.,  0., 0., 2.,  1.,
+                            0.,  0., 0., 2.5, 1.,
+                            3.,  1., 1., 0.5, 1.,
+                            3.,  1., 2., 1.,  1.,
+                            3.,  1., 3., 1.5, 1.,
+                            3.,  1., 4., 2.,  1.,
+                            3.,  1., 5., 2.5, 1. ]).reshape(10,5)
         
-        assert_almost_equal(X,xTrue)
+        assert_almost_equal(X, xTrue)
         pass
 
 

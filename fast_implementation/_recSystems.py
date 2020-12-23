@@ -70,11 +70,12 @@ class _Clf(_RecSystem):
         for edge in edges:
             userFeat = userNodes[edge.userId].get_features(featFncts['user'])
             movieFeat = movieNodes[edge.movieId].get_features(featFncts['movie'])
+            edgeFeat = edge.get_features(featFncts['edge'])
 
-            v = np.concatenate((userFeat, movieFeat))
+            v = np.concatenate((userFeat, edgeFeat, movieFeat))
             X.append(v)
             if len(v) == 0:
-                raise ValueError('No features for the edge: ', edge.userId, edge.movieId)
+                raise ValueError('No feature for the edge: ', edge.userId, edge.movieId)
 
         return np.stack(X, axis= 0)
 
