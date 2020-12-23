@@ -18,26 +18,30 @@ class TrivialClf(_Clf):
         super().__init__()
         pass
 
+    def set_featFncts(self):
+        # -- feature function definition
+        def average_rating(ratings, tags, timeRtg, timeTags):
+            return sum(tpl[1] for tpl in ratings) / len(ratings)
+
+        # -- setting feature functions
+        self.featFncts = {'user': [average_rating],
+                          'edge': [],
+                          'movie': []
+                        }
+        pass
+
     def fit(self, edges):
-        movieNodes = FastGraph.group_by_movie(edges)
-        self.idPred = max(movieNodes, key= lambda x : movieNodes[x].get_avgRating())
+        '''Nothing to fit for this clf
+        '''
+        xTrain = self._get_feature_matrix(edges)
         pass
 
 
     def predict(self, edges):
         ''' based on the average movie rating
         '''
-        pred = []
-
-        try:
-            idPred = self.idPred
-        except AttributeError:
-            raise Exception('fit method has not been called')
-
-        for edge in edges:
-            pred.append(edge.movieId == idPred)
-
-        return np.array(pred).astype('uint8')
+        xTest = self._get_feature_matrix(edges)
+        return (xTest > 3.2).astype('uint8')
 
 if __name__ =='__main__':
     pass
