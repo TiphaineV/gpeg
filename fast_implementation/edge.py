@@ -43,3 +43,11 @@ class Edge:
 
     def get_movieId(self):
         return self.movieId
+
+    def get_features(self, fncts):
+        rating = self.rating
+        tags = self.tags
+        timeRtg = self.timeRtg
+        timeTags = self.timeTags
+        return np.array([fncts[k](rating, tags, timeRtg, timeTags) for k in range(len(fncts))])
+
