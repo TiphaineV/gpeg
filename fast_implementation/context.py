@@ -14,4 +14,4 @@ def agg_as_list(series: pd.Series):
 
 
 # -- reading data
-userData = pd.read_csv('userData.csv')
+userData = pd.read_csv('userData.csv', chunksize= 1e6)

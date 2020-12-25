@@ -17,6 +17,7 @@ from abc import ABC, abstractmethod
 import time
 import numpy as np
 import numpy.random as rd
+from tqdm import tqdm
 
 #personal
 from edge import Edge
@@ -32,8 +33,6 @@ class _Graph(ABC):
         print('Graph init ...')
         # -- Attributes
         self.edges = []
-        movieIds = set()
-        userIds = set()
 
         # -- Adding ref to the graph 
         MovieNode.set_graph(self)
@@ -106,24 +105,23 @@ class FastGraph(_Graph):
         movieIds = set()
         userIds = set()
 
-        for idx in range(len(userData)):
-            # -- keys : userId, movieId, rating, tags, timestamps...
-            row = userData.iloc[idx]
+        for k,chunk in enumerate(userData):
+            print('chunk {}'.format(k))
 
-            # -- getting ids, ratings, tags from DB
-            userId, movieId= row['userId'], row['movieId']
-            rating, tags = row['rating'], row['tag']
-            timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
+            for idx in tqdm(range(len(chunk))):
+                # -- keys : userId, movieId, rating, tags, timestamps...
+                row = userData.iloc[idx]
 
-            # -- updating edge list, and keeping all id values
-            edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
-            movieIds.add(movieId)
-            userIds.add(userId)
+                # -- getting ids, ratings, tags from DB
+                userId, movieId= row['userId'], row['movieId']
+                rating, tags = row['rating'], row['tag']
+                timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
+
+                # -- updating edge list, and keeping all id values
+                edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
 
         # -- setting attributes
-        self.edges = np.array(edges)
-        self.movieIds = movieIds
-        self.userIds = userIds
+        self.edges = edges
 
         # -- IO
         print('Done')
