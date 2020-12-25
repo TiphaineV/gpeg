@@ -103,27 +103,23 @@ class FastGraph(_Graph):
 
     def set_edges(self):
         edges = []
-        movieIds = set()
-        userIds = set()
 
-        for idx in range(len(userData)):
-            # -- keys : userId, movieId, rating, tags, timestamps...
-            row = userData.iloc[idx]
+        for k,chunk in enumerate(userData):
+            print('Processing chunk {}.'.format(k))
+            for idx in tqdm(range(len(chunk))):
+                # -- keys : userId, movieId, rating, tags, timestamps...
+                row = userData.iloc[idx]
 
-            # -- getting ids, ratings, tags from DB
-            userId, movieId= row['userId'], row['movieId']
-            rating, tags = row['rating'], row['tag']
-            timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
+                # -- getting ids, ratings, tags from DB
+                userId, movieId= row['userId'], row['movieId']
+                rating, tags = row['rating'], row['tag']
+                timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
 
-            # -- updating edge list, and keeping all id values
-            edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
-            movieIds.add(movieId)
-            userIds.add(userId)
+                # -- updating edge list, and keeping all id values
+                edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
 
         # -- setting attributes
-        self.edges = np.array(edges)
-        self.movieIds = movieIds
-        self.userIds = userIds
+        self.edges = edges
 
         # -- IO
         print('Done')
