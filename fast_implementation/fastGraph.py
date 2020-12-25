@@ -109,7 +109,7 @@ class FastGraph(_Graph):
             print('Processing chunk {}.'.format(k))
             for idx in tqdm(range(len(chunk))):
                 # -- keys : userId, movieId, rating, tags, timestamps...
-                row = userData.iloc[idx]
+                row = chunk.iloc[idx]
 
                 # -- getting ids, ratings, tags from DB
                 userId, movieId= row['userId'], row['movieId']
