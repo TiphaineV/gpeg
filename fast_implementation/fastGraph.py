@@ -22,6 +22,7 @@ import numpy.random as rd
 from edge import Edge
 from node import MovieNode, UserNode
 from context import userData
+from tqdm import tqdm
 
 
 
