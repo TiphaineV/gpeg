@@ -21,7 +21,6 @@ from tqdm import tqdm
 
 #personal
 from edge import Edge
-from context import userData
 from node import MovieNode, UserNode
 
 

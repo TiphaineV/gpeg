@@ -10,7 +10,6 @@ import numpy as np
 from _recSystems import _Clf
 from node import UserNode, MovieNode
 from fastGraph import FastGraph
-from context import userData
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):

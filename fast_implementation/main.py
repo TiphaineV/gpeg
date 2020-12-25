@@ -9,7 +9,6 @@ import time
 from _recSystems import _Clf
 from node import UserNode, MovieNode
 from fastGraph import FastGraph
-from context import userData
 from trivialClf import TrivialClf
 from scorer import ClfScorer
 
