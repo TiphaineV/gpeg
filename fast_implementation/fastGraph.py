@@ -118,7 +118,8 @@ class FastGraph(_Graph):
 
                 # -- updating edge list, and keeping all id values
                 edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
-
+            if k == 5:
+                break
         # -- setting attributes
         self.edges = edges
 
