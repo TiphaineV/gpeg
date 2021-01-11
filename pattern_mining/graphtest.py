@@ -23,7 +23,7 @@ edges.append(Edge(3,3))
 
 I=[['a','b','c','d'],['w','x','y','z']]
 
-G=Graph_bi(V=V,I=I,edges=edges)
+G=Graph_bi(V=(V1, V2),I=I,edges=edges)
 
 EL=[]
 G.Enumerate(EL=EL,s=1,h=2,a=2)

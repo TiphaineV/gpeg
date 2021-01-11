@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import copy
 
 class Vertice:
     def __init__(self,idv:int,q:list):
@@ -111,13 +112,13 @@ class Graph_bi:
     
     def minus(self,q:list):
         "Return the set of item from the alphabet I which is not in the pattern q"
-        minus=[value for value in I[0]+I[1] if (value not in q[0]) & (value not in q[1])]
+        minus=[value for value in self.I[0]+self.I[1] if (value not in q[0]) & (value not in q[1])]
         return minus
     
     def add(self,q:list,x):
         "Return the pattern q with x added in the right place"
         q_new=copy.deepcopy(q)
-        if x in I[0]:
+        if x in self.I[0]:
             q_new[0] += [x]
         else:
             q_new[1] += [x]
