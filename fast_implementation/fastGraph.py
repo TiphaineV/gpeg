@@ -17,6 +17,7 @@ from abc import ABC, abstractmethod
 import time
 import numpy as np
 import numpy.random as rd
+import scipy.sparse as sparse
 
 #personal
 from edge import Edge
@@ -28,13 +29,18 @@ from tqdm import tqdm
 
 #%% FastGraph class
 class _Graph(ABC):
-    def __init__(self):
+    def __init__(self, size:str):
+        '''
+        Parameters
+        --------
+        size: str
+            'small' (100K), 'heavy' (20M)
+        '''
         # -- IO
         print('Graph init ...')
         # -- Attributes
+        self.size = size
         self.edges = []
-        movieIds = set()
-        userIds = set()
 
         # -- Adding ref to the graph 
         MovieNode.set_graph(self)
@@ -100,32 +106,41 @@ class _Graph(ABC):
 class FastGraph(_Graph):
     def __init__(self):
         super().__init__()
-        self.set_edges()
+        self.set_adjency()
 
-    def set_edges(self):
-        edges = []
+    def set_adjency(self): # A tester
+        '''Loads the adjency matrix if it has already been built. Builds it otherwise.
+        '''
+        try:
+            adjency = sparse.load_npz('adjency_'+self.size+'.npz')
+        except FileNotFoundError:
+            # -- Builds the matrix
+            chunksize = int(1e6)
+            userData = ... # chunksize, usecols (id, movie id)
+            rows = []
+            cols = []
+            data = []
+            for k,chunk in enumerate(userData):
+                print('Processing chunk {}.'.format(k))
+                for idx in tqdm(range(len(chunk))):
+                    # -- keys : userId, movieId.
+                    row = chunk.iloc[idx]
 
-        for k,chunk in enumerate(userData):
-            print('Processing chunk {}.'.format(k))
-            for idx in tqdm(range(len(chunk))):
-                # -- keys : userId, movieId, rating, tags, timestamps...
-                row = chunk.iloc[idx]
+                    # -- getting ids
+                    userId, movieId= row['userId'], row['movieId']
 
-                # -- getting ids, ratings, tags from DB
-                userId, movieId= row['userId'], row['movieId']
-                rating, tags = row['rating'], row['tag']
-                timeRtg, timeTags = row['timestamp_rating'], row['timestamp_tag']
+                    # -- updating rows, cols, data
+                    rows.append(userId)
+                    cols.append(movieId)
+                    data.append(k*chunksize+idx)
+            adjency = sparse.coo_matrix((data, (rows, cols)),size=(max(rows), max(cols)))
 
-                # -- updating edge list, and keeping all id values
-                edges.append(Edge(userId, movieId, rating, tags, timeRtg, timeTags))
-            if k == 5:
-                break
-        # -- setting attributes
-        self.edges = edges
+            # -- Saving matrix
+            print('Saving the matrix for next time')
+            sparse.save_npz('adjency_'+ self.size +'.npz', adjency, compressed= True)
 
-        # -- IO
-        print('Done')
-        pass
+        self.adjency = adjency
+        self.edges = adjency.data
 
     def train_test_split(self, alpha: float):
         '''
@@ -147,22 +162,6 @@ class FastGraph(_Graph):
         idxTrain, idxTest = sorted(indexes[nTest:]), sorted(indexes[:nTest])
         nTrain, nTest = len(idxTrain), len(idxTest)
 
-
-        # -- Fast implementation : a pointer follows each list.
-        k = 0
-        ptrTrain = 0
-        ptrTest = 0
-        while k < n:
-            if ptrTrain < nTrain and idxTrain[ptrTrain] == k:
-                edges[k].set_group('train')
-                ptrTrain +=1
-            elif ptrTest < nTest and idxTest[ptrTest] == k:
-                edges[k].set_group('test')
-                ptrTest += 1
-            else:
-                raise ValueError('2 pointers approach failed')
-            k +=1
-
         return self.get_edges(group= 'train'), self.get_edges(group= 'test')
 
 
@@ -171,12 +170,3 @@ class FastGraph(_Graph):
 
 if __name__ == '__main__':
     pass
-
-
-
-
-
-
-
-
-
