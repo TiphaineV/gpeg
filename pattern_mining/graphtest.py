@@ -11,6 +11,7 @@ V2=[]
 V2.append(Vertice(idv=1,q=['w','x','y']))
 V2.append(Vertice(idv=2,q=['w','x','z']))
 V2.append(Vertice(idv=3,q=['w','x','y']))
+V=[V1,V2]
 
 edges=[]
 edges.append(Edge(1,1))
