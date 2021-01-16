@@ -11,7 +11,7 @@ V2=[]
 V2.append(Vertice(idv=1,q=['w','x','y']))
 V2.append(Vertice(idv=2,q=['w','x','z']))
 V2.append(Vertice(idv=3,q=['w','x','y']))
-V=[V1,V2]
+
 
 edges=[]
 edges.append(Edge(1,1))
@@ -24,8 +24,9 @@ edges.append(Edge(3,3))
 
 I=[['a','b','c','d'],['w','x','y','z']]
 
-G=Graph_bi(V=V,I=I,edges=edges)
+G=Graph_bi(V=(V1, V2),I=I,edges=edges)
 
 EL=[]
+G.interior(2,2)
 G.Enumerate(EL=EL,s=1,h=2,a=2)
 print(EL)

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
-import 
+import copy
+import matplotlib.pyplot as plt
+import networkx as nwx
 
 class Vertice:
     def __init__(self,idv:int,q:list):
@@ -106,8 +108,10 @@ class Graph_bi:
                         edges2.append(e)
             
         S=[S1,S2]
-        G=Graph_bi(V=S,I=self.I,edges=edges2)
-        return G
+        self.V=S
+        self.edges=edges2
+        self.setCorePattern()
+        self.setDegrees()
         pass
     
     def minus(self,q:list):
@@ -126,24 +130,67 @@ class Graph_bi:
         return q_new
     
     def Enumerate(self,EL:list,s:int,h:int,a:int):
+        self.Output()
         for x in self.minus(self.q):
-            p=self.add(self.q,x)
             print(x)
-            S_x=self.extension(p)
-            for v in S_x.V[1]:
-                print(v.id)
-            S_x.interior(h,a)
-            for v in S_x.V[1]:
-                print(v.id)
-            if (len(S_x.V[0])>=s)&(len(S_x.V[1])>=s):
-                S_x.setCorePattern()
-                print(S_x.q)
-                print(S_x.q not in EL)
-                if S_x.q not in EL:
-                    EL.append(S_x.q)
-                    print(EL)
-                    S_x.Enumerate(EL=EL,s=s,h=h,a=a)
+            p=self.add(self.q,x)
+            Test=copy.deepcopy(self)
+            Test.extension(p)
+            Test.interior(h,a)
+            if (len(Test.V[0])>=s)&(len(Test.V[1])>=s):
+                #self.setCorePattern()
+                if x not in EL:
+                    self=copy.deepcopy(Test)
+                    EL.append(x)
+                    self.Enumerate(EL=EL,s=s,h=h,a=a)
+            Test=None
                     
+    def toStringPattern(self,q):
+        string=''
+        for i in q:
+            string+=i
+        return string
+
+    def Output(self):
+        #s=toStringPattern(self.q)
+        print('Core pattern: ',self.q)
+        G1 = nwx.Graph()
+        nodelist=[]
+        labels={}
+        ids={}
+        idx=0
+        for v in self.V[0]:
+            ids[str(v.id)+'V1']=idx
+            G1.add_node(idx,bipartite=0)
+            nodelist.append(idx)
+            string=''
+            for i in v.q:
+                string+=str(i)
+            labels[idx]=string
+            idx+=1
+
+        for v in self.V[1]:
+            ids[str(v.id)+'V2']=idx
+            G1.add_node(idx,bipartite=1)
+            nodelist.append(idx)
+            string=''
+            for i in v.q:
+                string+=str(i)
+            labels[idx]=string
+            idx+=1
+
+        for e in self.edges:
+            G1.add_edge(ids[str(e.V1Id)+'V1'],ids[str(e.V2Id)+'V2'])
+    
+        top = nwx.bipartite.sets(G1)[0]
+        pos = nwx.bipartite_layout(G1,top)
+        nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[:len(self.V[0])],node_color='c')
+        nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[len(self.V[0]):],node_color='y')
+        nwx.draw_networkx_edges(G1,pos)
+        nwx.draw_networkx_labels(G1, pos, labels, font_size=16)
+
+        plt.show() 
+            
              
     def getVerticeV1(self,idv:int):
         pass
