@@ -39,10 +39,6 @@ class Graph:
         ## - Not quite sure this is standard
         self.rowFormat = sparse.csr_matrix(self.adjency)
         self.colFormat = sparse.csc_matrix(self.adjency)
-
-        # -- Adding ref to the graph 
-        MovieNode.set_graph(self)
-        UserNode.set_graph(self)
         pass
 
     def get_user(self, userId: int):
