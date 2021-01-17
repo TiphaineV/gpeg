@@ -29,7 +29,7 @@ from tqdm import tqdm
 
 #%% FastGraph class
 class Graph:
-    def __init__(self, userData: pd.DataFrame):
+    def __init__(self, userData: pd.DataFrame, limit= 5):
         '''
         Parameters
         --------
@@ -39,7 +39,7 @@ class Graph:
         # -- IO
         print('Graph init ...')
         # -- Attributes
-        self.set_adjency(userData)
+        self.set_adjency(userData, limit)
 
         ## - Not quite sure this is standard
         self.rowFormat = sparse.csr(self.adjency)
@@ -57,8 +57,8 @@ class Graph:
         return self.colFormat[:,movieId]
 
     def set_adjency(self, userData): # A tester
-    '''Loads the adjency matrix if it has already been built. Builds it otherwise.
-    '''
+        '''Loads the adjency matrix if it has already been built. Builds it otherwise.
+        '''
         # -- Builds the matrix
         chunksize = int(1e6)
         rows = []
@@ -79,7 +79,7 @@ class Graph:
                 data.append(k*chunksize+idx)
 
             #### temp ####
-            if k == 4:
+            if k == limit - 1:
                 break
         
         adjency = sparse.coo_matrix((data, (rows, cols)),size=(max(rows), max(cols)))
