@@ -9,6 +9,7 @@ import numpy as np
 # personal
 from _recSystems import _Clf
 from fastGraph import Graph
+import pandas as pd
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):
