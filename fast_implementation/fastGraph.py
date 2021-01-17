@@ -18,6 +18,7 @@ import time
 import numpy as np
 import numpy.random as rd
 import scipy.sparse as sparse
+import pandas as pd
 
 #personal
 from edge import Edge
