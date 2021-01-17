@@ -55,7 +55,7 @@ class TrivialClf(_Clf):
         ''' based on the average movie rating
         '''
         xTest = self._get_feature_matrix(edges)
-        pass
+        return xTest['xu0'] > xTest['xm0']
 
 if __name__ =='__main__':
     pass
