@@ -55,7 +55,6 @@ class _Clf(_RecSystem):
             the functions should return a float, corresponding to the extracted feature.
         '''
         self.featFncts = {'user': [],
-                      'edge': [],
                       'movie': []
                       }
         pass
@@ -75,16 +74,13 @@ class _Clf(_RecSystem):
         X_u = pd.DataFrame(index= df['userId'].drop_duplicates().sort_values())
         X_m = pd.DataFrame(index=  df['movieId'].drop_duplicates().sort_values())
 
-        for k,featFnct in enumerate(featFncts['edge']):
-            X['xe'+str(k)] = featFnct(df)
-
         for k,featFnct in enumerate(featFncts['user']):
             X_u['xu'+str(k)] = featFnct(dfByUser)
 
         for k,featFnct in enumerate(featFncts['movie']):
             X_m['xm'+str(k)] = featFnct(dfByMovie)
 
-        return X.merge(X_u, on='userId', how='left').merge(X_m, on='movieId', how='left')#.drop(columns=['userId', 'movieId'])
+        return X.merge(X_u, on='userId', how='left').merge(X_m, on='movieId', how='left'), X_u, X_m#.drop(columns=['userId', 'movieId'])
 
     def _get_labels(self, edges):
         df = pd.DataFrame(self.df.iloc[edges], index = range(len(self.df.iloc[edges])))

@@ -71,9 +71,6 @@ class Graph:
             #### temp ####
             if k == nChunk - 1:
                 break
-        
-        print(len(data), len(rows), len(cols))
-        print(max(rows), max(cols))
 
         adjency = sparse.coo_matrix((data, (rows, cols)), shape=(max(rows)+1, max(cols)+1))
 
