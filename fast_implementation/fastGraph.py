@@ -57,9 +57,8 @@ class Graph:
     def get_movie(self, movieId: int):
         return self.colFormat[:,movieId]
 
-    def set_adjency(self, userData): # A tester
-        '''Loads the adjency matrix if it has already been built. Builds it otherwise.
-        '''
+    def set_adjency(self, userData, limit):
+        ''''''
         # -- Builds the matrix
         chunksize = int(1e6)
         rows = []
