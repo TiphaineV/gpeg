@@ -77,6 +77,10 @@ class Graph:
                 rows.append(userId)
                 cols.append(movieId)
                 data.append(k*chunksize+idx)
+
+            #### temp ####
+            if k == 4:
+                break
         
         adjency = sparse.coo_matrix((data, (rows, cols)),size=(max(rows), max(cols)))
 
