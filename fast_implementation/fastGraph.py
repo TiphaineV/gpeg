@@ -28,8 +28,8 @@ from tqdm import tqdm
 
 
 #%% FastGraph class
-class _Graph(ABC):
-    def __init__(self, size:str):
+class Graph:
+    def __init__(self, userData: pd.DataFrame):
         '''
         Parameters
         --------
@@ -39,108 +39,50 @@ class _Graph(ABC):
         # -- IO
         print('Graph init ...')
         # -- Attributes
-        self.size = size
-        self.edges = []
+        self.set_adjency(userData)
+
+        ## - Not quite sure this is standard
+        self.rowFormat = sparse.csr(self.adjency)
+        self.colFormat = sparse.csc(self.adjency)
 
         # -- Adding ref to the graph 
         MovieNode.set_graph(self)
         UserNode.set_graph(self)
         pass
 
-    @abstractmethod
-    def set_edges(self):
-        '''Should also set movieIds and userIds
-        '''
-        pass
+    def get_user(self, userId: int):
+        return self.rowFormat[userId]
 
-    @classmethod
-    def group_by(cls, method, edges, degreeMin=1):
-        '''ties the provided edges to the nodes
-        '''
-        user = method is Edge.get_userId
-        # -- getting all nodes
-        nodes = {}
-        for idx, edge in enumerate(edges):
-            idd = method(edge)
+    def get_movie(self, movieId: int):
+        return self.colFormat[:,movieId]
 
-            # -- add the node to the dict if it doesn't exist
-            try:
-                nodes[idd].add(idx)
-            except KeyError:
-                if user:
-                    node = UserNode(idd)
-                else:
-                    node = MovieNode(idd)
-                node.add(idx)
-                nodes.update({idd : node})
+    def set_adjency(self, userData): # A tester
+    '''Loads the adjency matrix if it has already been built. Builds it otherwise.
+    '''
+        # -- Builds the matrix
+        chunksize = int(1e6)
+        rows = []
+        cols = []
+        data = []
+        for k,chunk in enumerate(userData):
+            print('Processing chunk {}.'.format(k))
+            for idx in tqdm(range(len(chunk))):
+                # -- keys : userId, movieId.
+                row = chunk.iloc[idx]
 
-        # -- keeping only those within a certain range of degree
-        ids = nodes.keys()
-        return {idd : nodes[idd] for idd in ids
-                                         if nodes[idd].get_degree() >= degreeMin
-                                         }
+                # -- getting ids
+                userId, movieId= row['userId'], row['movieId']
 
-    @classmethod
-    def group_by_user(cls, edges, degreeMin= 1)->dict:
-        '''ties the provided edges to the user Nodes
-        '''
-        method = Edge.get_userId
-        return cls.group_by(method, edges, degreeMin)
-
-
-    @classmethod
-    def group_by_movie(cls, edges, degreeMin= 1)->dict:
-        '''ties the provided edges to the movie Nodes
-        '''
-        method = Edge.get_movieId
-        return cls.group_by(method, edges, degreeMin)
-
-    def get_edges(self, group = 'all'):
-        if group == 'all':
-            return self.edges
-        else:
-            edges = self.edges
-            return [edge for edge in edges if edge.group == group]
-    pass
-
-class FastGraph(_Graph):
-    def __init__(self):
-        super().__init__()
-        self.set_adjency()
-
-    def set_adjency(self): # A tester
-        '''Loads the adjency matrix if it has already been built. Builds it otherwise.
-        '''
-        try:
-            adjency = sparse.load_npz('adjency_'+self.size+'.npz')
-        except FileNotFoundError:
-            # -- Builds the matrix
-            chunksize = int(1e6)
-            userData = ... # chunksize, usecols (id, movie id)
-            rows = []
-            cols = []
-            data = []
-            for k,chunk in enumerate(userData):
-                print('Processing chunk {}.'.format(k))
-                for idx in tqdm(range(len(chunk))):
-                    # -- keys : userId, movieId.
-                    row = chunk.iloc[idx]
-
-                    # -- getting ids
-                    userId, movieId= row['userId'], row['movieId']
-
-                    # -- updating rows, cols, data
-                    rows.append(userId)
-                    cols.append(movieId)
-                    data.append(k*chunksize+idx)
-            adjency = sparse.coo_matrix((data, (rows, cols)),size=(max(rows), max(cols)))
-
-            # -- Saving matrix
-            print('Saving the matrix for next time')
-            sparse.save_npz('adjency_'+ self.size +'.npz', adjency, compressed= True)
+                # -- updating rows, cols, data
+                rows.append(userId)
+                cols.append(movieId)
+                data.append(k*chunksize+idx)
+        
+        adjency = sparse.coo_matrix((data, (rows, cols)),size=(max(rows), max(cols)))
 
         self.adjency = adjency
         self.edges = adjency.data
+        pass
 
     def train_test_split(self, alpha: float):
         '''
@@ -162,11 +104,7 @@ class FastGraph(_Graph):
         idxTrain, idxTest = sorted(indexes[nTest:]), sorted(indexes[:nTest])
         nTrain, nTest = len(idxTrain), len(idxTest)
 
-        return self.get_edges(group= 'train'), self.get_edges(group= 'test')
-
-
-
-
+        return edges[idxTrain], edges[idxTest]
 
 if __name__ == '__main__':
     pass

@@ -19,14 +19,30 @@ class TrivialClf(_Clf):
 
     def set_featFncts(self):
         # -- feature function definition
-        def average_rating(ratings, tags, timeRtg, timeTags):
-            return sum(tpl[1] for tpl in ratings) / len(ratings)
+        def edge_liked(df:pd.DataFrame):
+            return (df['rating'] > 1).astype('uint8')
+
+        def edge_has_tag(df:pd.DataFrame):
+            return 1- df['tag'].isna().astype('uint8')
+
+        def edge_timestamps(df:pd.DataFrame):
+            return (df['timestamp_rating'] < df['timestamp_tag']).astype('uint8')
+
+        def user_mean(dfByUser:pd.DataFrame):
+            return dfByUser['rating'].agg(np.mean)
+
+        def user_corr(dfByUser:pd.DataFrame):
+            #-- not working yet
+            return dfByUser[['rating', 'movieId']].apply(corr_custom)
+
+        def movie_mean(dfByMovie:pd.DataFrame):
+            return dfByMovie['rating'].agg(np.mean)
 
         # -- setting feature functions
-        self.featFncts = {'user': [average_rating],
-                          'edge': [],
-                          'movie': []
-                        }
+        self.featFncts = {'user': [user_mean],
+              'edge': [edge_liked, edge_has_tag, edge_timestamps],
+              'movie': [movie_mean]
+              }
         pass
 
     def fit(self, edges):
@@ -40,7 +56,8 @@ class TrivialClf(_Clf):
         ''' based on the average movie rating
         '''
         xTest = self._get_feature_matrix(edges)
-        return (xTest > 3.2).astype('uint8')
+        print(xTest.head(5))
+        pass
 
 if __name__ =='__main__':
     pass

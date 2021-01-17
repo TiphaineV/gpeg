@@ -6,6 +6,7 @@ Inspired by sklearn _base.py
 #standard
 from abc import ABC, abstractmethod
 import numpy as np
+import pandas as pd
 
 #personal
 from node import UserNode, MovieNode
@@ -36,8 +37,9 @@ class _Clf(_RecSystem):
     '''
     Classifier recommendation system
     '''
-    def __init__(self):
+    def __init__(self, df):
         super().__init__()
+        self.df = df
         self.set_featFncts()
         pass
 
@@ -60,24 +62,31 @@ class _Clf(_RecSystem):
         pass
 
     def _get_feature_matrix(self, edges):
-        '''Only user and movie features implemented yet
         '''
+        '''
+        df = self.df.iloc[edges]
         featFncts = self.featFncts
-        userNodes = _Graph.group_by_user(edges)
-        movieNodes = _Graph.group_by_movie(edges)
 
-        X = [] # the feature matrix
-        for edge in edges:
-            userFeat = userNodes[edge.userId].get_features(featFncts['user'])
-            movieFeat = movieNodes[edge.movieId].get_features(featFncts['movie'])
-            edgeFeat = edge.get_features(featFncts['edge'])
+        dfByUser = df.groupby('userId')
+        dfByMovie = df.groupby('movieId')
 
-            v = np.concatenate((userFeat, edgeFeat, movieFeat))
-            X.append(v)
-            if len(v) == 0:
-                raise ValueError('No feature for the edge: ', edge.userId, edge.movieId)
+        X = pd.DataFrame() 
+        X['userId'] = df['userId']
+        X['movieId'] = df['movieId']
+        X_u = pd.DataFrame(index= df['userId'].drop_duplicates().sort_values())
+        X_m = pd.DataFrame(index=  df['movieId'].drop_duplicates().sort_values())
 
-        return np.stack(X, axis= 0)
+        for k,featFnct in enumerate(featFncts['edge']):
+            X['xe'+str(k)] = featFnct(df)
+
+        for k,featFnct in enumerate(featFncts['user']):
+            X_u['xu'+str(k)] = featFnct(dfByUser)
+
+        for k,featFnct in enumerate(featFncts['movie']):
+            X_m['xm'+str(k)] = featFnct(dfByMovie)
+
+        return X.merge(X_u, on='userId', how='left').merge(X_m, on='movieId', how='left')#.drop(columns=['userId', 'movieId'])
+        
 
 
     @abstractmethod
