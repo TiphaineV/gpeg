@@ -43,8 +43,8 @@ class Graph:
         self.set_adjency(userData, limit)
 
         ## - Not quite sure this is standard
-        self.rowFormat = sparse.csr(self.adjency)
-        self.colFormat = sparse.csc(self.adjency)
+        self.rowFormat = sparse.csr_matrix(self.adjency)
+        self.colFormat = sparse.csc_matrix(self.adjency)
 
         # -- Adding ref to the graph 
         MovieNode.set_graph(self)
@@ -82,7 +82,6 @@ class Graph:
             if k == limit - 1:
                 break
         
-        print(data, rows, cols)
         print(len(data), len(rows), len(cols))
         print(max(rows), max(cols))
 
