@@ -51,17 +51,17 @@ class TrivialClf(_Clf):
         xTrain =self.xTrain
         d = np.column_stack((self.adj.row, self.adj.col))[edges]
         # -- Getting edges for which users and movies have been seen during training
-        uniqueU, idxU = np.unique(self.adj.row[edges], return_indices=True)
-        uniqueM, idxU = np.unique(self.adj.col[edges], return_indices=True)
-        _,_, commU = np.intersect1d(X_u['userId'], uniqueU, assume_unique= True, return_indices= True)
-        _,_, commM = np.intersect1d(X_m['movieId'], uniqueM, assume_unique= True, return_indices= True)
+        uniqueU, idxU = np.unique(self.adj.row[edges], return_index=True)
+        uniqueM, idxM = np.unique(self.adj.col[edges], return_index=True)
+        _,_, commU = np.intersect1d(X_u.index, uniqueU, assume_unique= True, return_indices= True)
+        _,_, commM = np.intersect1d(X_m.index, uniqueM, assume_unique= True, return_indices= True)
 
-        knownU = np.concatenate([idxU[commU[k]: commU[k]+1] if k < len(commU) -1 else [idxU[commU[k]:]]] for k in range(len(commU)))
-        knownM = np.concatenate([idxU[commM[k]: commM[k]+1] if k < len(commM) -1 else [idxM[commM[k]:]]] for k in range(len(commM)))
-        knownE = edges[np.intesect1d(knownU, knownM, assume_unique= False)]
+        knownU = np.concatenate([idxU[commU[k]: commU[k]+1] if k < len(commU) -1 else idxU[commU[k]:] for k in range(len(commU))])
+        knownM = np.concatenate([idxU[commM[k]: commM[k]+1] if k < len(commM) -1 else idxM[commM[k]:] for k in range(len(commM))])
+        knownE = edges[np.intersect1d(knownU, knownM, assume_unique= False)]
 
         # -- Getting the others
-        unknownE = np.setdiff1d((edges, knownE), assume_unique=True)
+        unknownE = np.setdiff1d(edges, knownE, assume_unique=True)
 
         return knownE, unknownE
 
