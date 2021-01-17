@@ -62,7 +62,7 @@ class TrivialClf(_Clf):
             except IndexError:
                 pass
 
-        return edges[data], edges[np.logical_not(data)]
+        return data
 
 
     def predict(self, edges):
@@ -70,7 +70,7 @@ class TrivialClf(_Clf):
         '''
         X_u = self.X_u
         X_m = self.X_m
-
+        data = self._get_known_edges(edges)
 
         # -- Building the matrix
         index0 = np.where(data)[0]

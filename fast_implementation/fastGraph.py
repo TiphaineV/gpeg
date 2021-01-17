@@ -24,7 +24,7 @@ import pandas as pd
 
 #%% FastGraph class
 class Graph:
-    def __init__(self, userData: pd.DataFrame, nChunk= 5):
+    def __init__(self, userData = None, nChunk= 5, path= None):
         '''
         Parameters
         --------
@@ -33,8 +33,11 @@ class Graph:
         '''
         # -- IO
         print('Graph init ...')
+        if path != None:
+            self.load_adjency(path)
         # -- Attributes
-        self.set_adjency(userData, nChunk= nChunk)
+        if userData !=None and path == None:
+            self.set_adjency(userData, nChunk= nChunk)
 
         ## - Not quite sure this is standard
         self.rowFormat = sparse.csr_matrix(self.adjency)
@@ -46,6 +49,20 @@ class Graph:
 
     def get_movie(self, movieId: int):
         return self.colFormat[:,movieId]
+
+    def load_adjency(self, path):
+        try:
+            self.adjency = sparse.load_npz(path)
+
+        except FileNotFoundError:
+            print("file was not found, please try again or provide userData")
+            raise
+        pass
+
+    def save_adjency(self, fileName):
+        sparse.save_npz(fileName, self.adjency)
+        pass
+
 
     def set_adjency(self, userData, nChunk= np.inf):
         ''''''
