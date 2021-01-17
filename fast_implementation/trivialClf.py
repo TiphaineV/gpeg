@@ -46,7 +46,6 @@ class TrivialClf(_Clf):
     def _get_known_edges(self, edges):
         ''' gets the edges for which we have data for both the user and the movie
         '''
-        edges = testEdges
         X_u = self.X_u
         X_m = self.X_m
         xTrain = self.xTrain
