@@ -10,7 +10,7 @@ from sklearn.metrics import classification_report, precision_score, recall_score
 
 # personal
 from _recSystems import _RecSystem
-from fastGraph import FastGraph
+from fastGraph import Graph
 from context import likeThr
 
 
@@ -57,7 +57,7 @@ class ClfScorer(_Scorer):
                 precision, recall, f1-score
         '''
         yPred = clf.predict(edges)
-        yTrue = np.array([edge.rating > likeThr for edge in edges]).astype('uint8')
+        yTrue = clf._get_labels(edges)
         print(classification_report(yTrue, yPred, target_names = ['class 0', 'class 1']))
 
         if metric == 'precision':

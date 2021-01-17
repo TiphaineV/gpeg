@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 #personal
-from context import userData
+from context import likeThr
 from fastGraph import Graph
 
 
@@ -85,7 +85,10 @@ class _Clf(_RecSystem):
             X_m['xm'+str(k)] = featFnct(dfByMovie)
 
         return X.merge(X_u, on='userId', how='left').merge(X_m, on='movieId', how='left')#.drop(columns=['userId', 'movieId'])
-        
+
+    def _get_labels(self, edges):
+        df = self.df.iloc[edges]
+        return (df['rating'] > likeThr).astype('uint8')
 
 
     @abstractmethod

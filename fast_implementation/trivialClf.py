@@ -19,8 +19,6 @@ class TrivialClf(_Clf):
 
     def set_featFncts(self):
         # -- feature function definition
-        def edge_liked(df:pd.DataFrame):
-            return (df['rating'] > 1).astype('uint8')
 
         def edge_has_tag(df:pd.DataFrame):
             return 1- df['tag'].isna().astype('uint8')
@@ -40,7 +38,7 @@ class TrivialClf(_Clf):
 
         # -- setting feature functions
         self.featFncts = {'user': [user_mean],
-              'edge': [edge_liked, edge_has_tag, edge_timestamps],
+              'edge': [edge_has_tag, edge_timestamps],
               'movie': [movie_mean]
               }
         pass
@@ -49,7 +47,7 @@ class TrivialClf(_Clf):
         '''Nothing to fit for this clf
         '''
         xTrain = self._get_feature_matrix(edges)
-        print(xTrain.head(5))
+        yTrain = self._get_labels(edges)
         pass
 
 
@@ -57,7 +55,6 @@ class TrivialClf(_Clf):
         ''' based on the average movie rating
         '''
         xTest = self._get_feature_matrix(edges)
-        print(xTest.head(5))
         pass
 
 if __name__ =='__main__':
