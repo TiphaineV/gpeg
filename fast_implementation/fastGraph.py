@@ -82,7 +82,11 @@ class Graph:
             if k == limit - 1:
                 break
         
-        adjency = sparse.coo_matrix((data, (rows, cols)), shape=(max(rows), max(cols)))
+        print(data, rows, cols)
+        print(len(data), len(rows), len(cols))
+        print(max(rows), max(cols))
+
+        adjency = sparse.coo_matrix((data, (rows, cols)), shape=(max(rows)+1, max(cols)+1))
 
         self.adjency = adjency
         self.edges = adjency.data
