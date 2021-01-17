@@ -8,8 +8,7 @@ import numpy as np
 
 # personal
 from _recSystems import _Clf
-from node import UserNode, MovieNode
-from fastGraph import FastGraph
+from fastGraph import Graph
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):

@@ -9,9 +9,8 @@ import numpy as np
 import pandas as pd
 
 #personal
-from node import UserNode, MovieNode
 from context import userData
-from fastGraph import _Graph
+from fastGraph import Graph
 
 
 #%% Trivial Recommandation System
