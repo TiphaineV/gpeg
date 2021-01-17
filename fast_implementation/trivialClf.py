@@ -12,8 +12,8 @@ from fastGraph import Graph
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, df):
+        super().__init__(df)
         pass
 
     def set_featFncts(self):
@@ -48,6 +48,7 @@ class TrivialClf(_Clf):
         '''Nothing to fit for this clf
         '''
         xTrain = self._get_feature_matrix(edges)
+        print(xTrain.head(5))
         pass
 
 
