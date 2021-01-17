@@ -20,12 +20,6 @@ import numpy.random as rd
 import scipy.sparse as sparse
 import pandas as pd
 
-#personal
-from edge import Edge
-from node import MovieNode, UserNode
-from context import userData
-from tqdm import tqdm
-
 
 
 #%% FastGraph class
@@ -57,7 +51,7 @@ class Graph:
     def get_movie(self, movieId: int):
         return self.colFormat[:,movieId]
 
-    def set_adjency(self, userData, limit):
+    def set_adjency(self, userData, nChunk= np.inf):
         ''''''
         # -- Builds the matrix
         chunksize = int(1e6)
@@ -66,7 +60,7 @@ class Graph:
         data = []
         for k,chunk in enumerate(userData):
             print('Processing chunk {}.'.format(k))
-            for idx in tqdm(range(len(chunk))):
+            for idx in range(len(chunk)):
                 # -- keys : userId, movieId.
                 row = chunk.iloc[idx]
 
@@ -79,7 +73,7 @@ class Graph:
                 data.append(k*chunksize+idx)
 
             #### temp ####
-            if k == limit - 1:
+            if k == nChunk - 1:
                 break
         
         print(len(data), len(rows), len(cols))
