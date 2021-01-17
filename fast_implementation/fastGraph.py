@@ -24,7 +24,7 @@ import pandas as pd
 
 #%% FastGraph class
 class Graph:
-    def __init__(self, userData: pd.DataFrame, limit= 5):
+    def __init__(self, userData: pd.DataFrame, nChunk= 5):
         '''
         Parameters
         --------
@@ -34,7 +34,7 @@ class Graph:
         # -- IO
         print('Graph init ...')
         # -- Attributes
-        self.set_adjency(userData, limit)
+        self.set_adjency(userData, nChunk= nChunk)
 
         ## - Not quite sure this is standard
         self.rowFormat = sparse.csr_matrix(self.adjency)
