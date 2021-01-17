@@ -37,7 +37,7 @@ class TrivialClf(_Clf):
         pass
 
     def fit(self, edges):
-        '''Nothing to fit for this clf
+        '''Nothing parameter to fit for this clf
         '''
         self.xTrain, self.X_u, self.X_m = self._get_feature_matrix(edges)
         self.yTrain = self._get_labels(edges)
@@ -46,43 +46,53 @@ class TrivialClf(_Clf):
     def _get_known_edges(self, edges):
         ''' gets the edges for which we have data for both the user and the movie
         '''
+        edges = testEdges
         X_u = self.X_u
         X_m = self.X_m
-        xTrain =self.xTrain
+        xTrain = self.xTrain
         d = np.column_stack((self.adj.row, self.adj.col))[edges]
-        # -- Getting edges for which users and movies have been seen during training
-        uniqueU, idxU = np.unique(self.adj.row[edges], return_index=True)
-        uniqueM, idxM = np.unique(self.adj.col[edges], return_index=True)
-        _,_, commU = np.intersect1d(X_u.index, uniqueU, assume_unique= True, return_indices= True)
-        _,_, commM = np.intersect1d(X_m.index, uniqueM, assume_unique= True, return_indices= True)
+        data = np.zeros((d.shape[0],), dtype=bool)
 
-        knownU = np.concatenate([idxU[commU[k]: commU[k]+1] if k < len(commU) -1 else idxU[commU[k]:] for k in range(len(commU))])
-        knownM = np.concatenate([idxU[commM[k]: commM[k]+1] if k < len(commM) -1 else idxM[commM[k]:] for k in range(len(commM))])
-        knownE = edges[np.intersect1d(knownU, knownM, assume_unique= False)]
+        # linear complexity -> bad
+        for k in range(d.shape[0]):
+            try:
+                X_u.iloc[d[k][0]]
+                X_m.iloc[d[k][1]]
+                data[k] = True
+            except IndexError:
+                pass
 
-        # -- Getting the others
-        unknownE = np.setdiff1d(edges, knownE, assume_unique=True)
-
-        return knownE, unknownE
+        return edges[data], edges[np.logical_not(data)]
 
 
     def predict(self, edges):
         ''' based on the average movie rating
         '''
-        knownE, unknownE = self._get_known_edges(edges)
+        X_u = self.X_u
+        X_m = self.X_m
+
 
         # -- Building the matrix
-        xTestKnown= pd.DataFrame(index = knownE)
-        xTestKnown[X_u.columns] = X_u.iloc[self.adj.row[knownE]]
-        xTestKnown[X_m.columns] = X_m.iloc[self.adj.col[knownE]]
+        index0 = np.where(data)[0]
+        xTestKnown= pd.DataFrame(index = index0)
+        
+        V = X_u.iloc[self.adj.row[edges[data]]]
+        V.index = index0
+        W = X_m.iloc[self.adj.col[edges[data]]]
+        W.index = index0
+        
+        xTestKnown[X_u.columns] = V
+        xTestKnown[X_m.columns] = W
 
+        # -- Make the prediction here
         yTestKnown = xTestKnown['xu0'] < xTestKnown['xm0']
 
-        yTestUnknown = pd.DataFrame(np.random.randint(2, size= len(unknownE)), index= unknownE)
+        yTestUnknown = pd.Series(np.random.randint(2, size= len(np.where(np.logical_not(data))[0])), index= np.where(np.logical_not(data))[0])
 
-        yTestKnown.append(yTestKnown, sort=True)
+        yPred = yTestKnown.append(yTestUnknown)
 
-        return yTestKnown
+        print('random prop', len(yTestKnown)/len(yPred))
+        return yPred
 
 if __name__ =='__main__':
     pass
