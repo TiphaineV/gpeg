@@ -122,7 +122,7 @@ class _Clf(_RecSystem):
         return xTestKnown, yTestUnknown
 
     @abstractmethod
-    def _predict_known(xTestKnown: pd.DataFrame):
+    def _predict_known(self, xTestKnown: pd.DataFrame):
         '''
         '''
         pass
@@ -142,15 +142,13 @@ class _Clf(_RecSystem):
                 containing the predictions (0 or 1) in the same order
         '''
 
-        xTestKnown, yTestKnown = self._get_known_edges(edges)
+        xTestKnown, yTestUnknown = self._get_known_edges(edges)
 
         # -- prediction
         yTestKnown = self._predict_known(xTestKnown)
 
         yPred = yTestKnown.append(yTestUnknown)
         print('random prop', len(yTestKnown)/len(yPred))
-        assert yPred.index == yPred.index.sort_values()
-        
         return yPred
         pass
     pass

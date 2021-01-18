@@ -19,21 +19,15 @@ class TrivialClf(_Clf):
         pass
 
     def set_featFncts(self):
-        # -- feature function definition
+        # -- setting feature functions
         def user_mean(dfByUser:pd.DataFrame):
             return dfByUser['rating'].agg(np.mean)
 
-        def user_corr(dfByUser:pd.DataFrame):
-            #-- not working yet
-            return dfByUser[['rating', 'movieId']].apply(corr_custom)
-
         def movie_mean(dfByMovie:pd.DataFrame):
             return dfByMovie['rating'].agg(np.mean)
-
-        # -- setting feature functions
+        
         self.featFncts = {'user': [user_mean],
-              'movie': [movie_mean]
-              }
+                           'movie': [movie_mean]}
         pass
 
     def fit(self, edges):
@@ -42,7 +36,7 @@ class TrivialClf(_Clf):
         self.xTrain, self.X_u, self.X_m = self._get_feature_matrix(edges)
         pass
 
-    def _predict_known(xTestKnown):
+    def _predict_known(self, xTestKnown):
         return xTestKnown['xu0'] < xTestKnown['xm0']
 
 if __name__ =='__main__':
