@@ -9,6 +9,7 @@ import numpy as np
 # personal
 from _recSystems import _Clf
 from fastGraph import Graph
+from features import NodeFeatures
 import pandas as pd
 
 #%% Trivial Recommendation System
@@ -20,19 +21,19 @@ class TrivialClf(_Clf):
 
     def set_featFncts(self):
         # -- feature function definition
-        def user_mean(dfByUser:pd.DataFrame):
-            return dfByUser['rating'].agg(np.mean)
+        # def user_mean(dfByUser:pd.DataFrame):
+            # return dfByUser['rating'].agg(np.mean)
 
-        def user_corr(dfByUser:pd.DataFrame):
-            #-- not working yet
-            return dfByUser[['rating', 'movieId']].apply(corr_custom)
+        # def user_corr(dfByUser:pd.DataFrame):
+            # #-- not working yet
+            # return dfByUser[['rating', 'movieId']].apply(corr_custom)
 
-        def movie_mean(dfByMovie:pd.DataFrame):
-            return dfByMovie['rating'].agg(np.mean)
+        # def movie_mean(dfByMovie:pd.DataFrame):
+            # return dfByMovie['rating'].agg(np.mean)
 
         # -- setting feature functions
-        self.featFncts = {'user': [user_mean],
-              'movie': [movie_mean]
+        self.featFncts = {'user': [NodeFeatures.user_mean],
+              'movie': [NodeFeatures.movie_mean]
               }
         pass
 
