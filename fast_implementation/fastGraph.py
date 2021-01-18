@@ -42,6 +42,7 @@ class Graph:
     def load_adjency(self, path):
         try:
             self.adjency = sparse.load_npz(path)
+            self.edges = self.adjency.data
 
         except FileNotFoundError:
             print("file was not found, please try again or provide userData")

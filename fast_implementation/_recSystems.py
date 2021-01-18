@@ -36,27 +36,11 @@ class _Clf(_RecSystem):
     '''
     Classifier recommendation system
     '''
-    def __init__(self, df):
+    def __init__(self, df, adj, featFncts):
         super().__init__()
         self.df = df
-        self.set_featFncts()
-        pass
-
-    @abstractmethod
-    def set_featFncts(self):
-        '''Here are defined the features through the use of 'feature functions'.
-        A feature function is defined as a function from either the data
-        on the user, or the data on the movie, or the data on the edge, to a subset of 
-        the real numbers.
-
-        Sets
-        -------
-        featureFncts: dict of list of functions
-            the functions should return a float, corresponding to the extracted feature.
-        '''
-        self.featFncts = {'user': [],
-                      'movie': []
-                      }
+        self.featFncts = featFncts
+        self.adj = adj
         pass
 
     def _get_feature_matrix(self, edges):
@@ -122,7 +106,7 @@ class _Clf(_RecSystem):
         return xTestKnown, yTestUnknown
 
     @abstractmethod
-    def _predict_known(xTestKnown: pd.DataFrame):
+    def _predict_known(self, xTestKnown: pd.DataFrame):
         '''
         '''
         pass
@@ -142,15 +126,13 @@ class _Clf(_RecSystem):
                 containing the predictions (0 or 1) in the same order
         '''
 
-        xTestKnown, yTestKnown = self._get_known_edges(edges)
+        xTestKnown, yTestUnknown = self._get_known_edges(edges)
 
         # -- prediction
         yTestKnown = self._predict_known(xTestKnown)
 
         yPred = yTestKnown.append(yTestUnknown)
         print('random prop', len(yTestKnown)/len(yPred))
-        assert yPred.index == yPred.index.sort_values()
-        
         return yPred
         pass
     pass
