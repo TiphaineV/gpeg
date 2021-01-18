@@ -86,8 +86,48 @@ class _Clf(_RecSystem):
         df = pd.DataFrame(self.df.iloc[edges], index = range(len(self.df.iloc[edges])))
         return (df['rating'] > likeThr).astype('uint8')
 
+    def _get_known_edges(self, edges):
+        ''' gets the edges for which we have data for both the user and the movie
+        '''
+        X_u = self.X_u
+        X_m = self.X_m
+        xTrain = self.xTrain
+        d = np.column_stack((self.adj.row, self.adj.col))[edges]
+        data = np.zeros((d.shape[0],), dtype=bool)
+
+        # linear complexity -> bad
+        for k in range(d.shape[0]):
+            try:
+                X_u.iloc[d[k][0]]
+                X_m.iloc[d[k][1]]
+                data[k] = True
+            except IndexError:
+                pass
+
+        # -- Building the matrix
+        index0 = np.where(data)[0]
+        xTestKnown= pd.DataFrame(index = index0)
+        
+        V = X_u.iloc[self.adj.row[edges[data]]]
+        V.index = index0
+        W = X_m.iloc[self.adj.col[edges[data]]]
+        W.index = index0
+        
+        xTestKnown[X_u.columns] = V
+        xTestKnown[X_m.columns] = W
+
+        yTestUnknown = pd.Series(np.random.randint(2, size= len(np.where(np.logical_not(data))[0])), index= np.where(np.logical_not(data))[0])
+
+
+        return xTestKnown, yTestUnknown
 
     @abstractmethod
+    def _predict_known(xTestKnown: pd.DataFrame):
+        '''
+        '''
+        pass
+
+
     def predict(self, edges):
         '''predicts if the user likes the movie, without looking at the score of the edge.
         
@@ -98,8 +138,19 @@ class _Clf(_RecSystem):
 
         Returns
         -------
-            pred: np.array of shape (nUsers,)
+            pred: np.array of shape (nEdges,)
                 containing the predictions (0 or 1) in the same order
         '''
+
+        xTestKnown, yTestKnown = self._get_known_edges(edges)
+
+        # -- prediction
+        yTestKnown = self._predict_known(xTestKnown)
+
+        yPred = yTestKnown.append(yTestUnknown)
+        print('random prop', len(yTestKnown)/len(yPred))
+        assert yPred.index == yPred.index.sort_values()
+        
+        return yPred
         pass
     pass
