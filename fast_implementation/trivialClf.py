@@ -13,21 +13,8 @@ import pandas as pd
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):
-    def __init__(self, df, adj):
-        super().__init__(df)
-        self.adj = adj
-        pass
-
-    def set_featFncts(self):
-        # -- setting feature functions
-        def user_mean(dfByUser:pd.DataFrame):
-            return dfByUser['rating'].agg(np.mean)
-
-        def movie_mean(dfByMovie:pd.DataFrame):
-            return dfByMovie['rating'].agg(np.mean)
-        
-        self.featFncts = {'user': [user_mean],
-                           'movie': [movie_mean]}
+    def __init__(self, df, adj, featFncts):
+        super().__init__(df, adj, featFncts)
         pass
 
     def fit(self, edges):
