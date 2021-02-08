@@ -13,3 +13,8 @@ python-dateutil==2.8.1
 pytz==2020.4
 six==1.15.0
 virtualenv==20.1.0
+nbconvert
+pydrive
+google-colab
+prompt-toolkit
+ipython

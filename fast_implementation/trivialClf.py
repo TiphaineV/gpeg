@@ -9,13 +9,21 @@ import numpy as np
 # personal
 from _recSystems import _Clf
 from fastGraph import Graph
+from features import NodeFeatures
 import pandas as pd
 
 #%% Trivial Recommendation System
 class TrivialClf(_Clf):
-    def __init__(self, df, adj, featFncts):
-        super().__init__(df, adj, featFncts)
+    def __init__(self, df, adj):
+        super().__init__(df)
+        self.adj = adj
         pass
+
+    def set_featFncts(self):
+        # -- setting feature functions
+        self.featFncts = {'user': [NodeFeatures.user_mean],
+              'movie': [NodeFeatures.movie_mean]
+              }
 
     def fit(self, edges):
         '''Nothing parameter to fit for this clf
