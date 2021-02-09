@@ -5,6 +5,7 @@ from GraphExtract import GraphExtract
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
 import time
+import subprocess
 
 userMovieData_byChunk = pd.read_csv('../Data/userMovieData_small.csv', chunksize= int(1e6))
 
@@ -49,7 +50,7 @@ print("Graph extracted in ",s1-s0," s")
 print("We will call this graph g100NofN (because we took the 100 neighbors of the 100 neighbors)\nWe just extract it out of curiosity, this graph will not be enumerated\n")
 
 print("Cleaning previous pdf")
-! ./cleaning.sh
+subprocess.call("./cleaning.sh")
 print("Cleaned\n")
 
 print("\nEnumerating g10 with h=a=2 ")

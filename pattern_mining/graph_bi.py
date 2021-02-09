@@ -245,18 +245,22 @@ class Graph_bi:
 
             else:
                 ax=None
-                String='Core Pattern:\n['
-                i=0
-                for pat in self.q:
-                    String+='['
-                    for q in pat:
+                String='Core Pattern:\n'
+                
+                for i in range(len(self.q)):
+                    c=0
+                    if i==0:
+                        String+='User: '
+                    else:
+                        String+='Movie: '
+                    for q in self.q[i]:
                         String+=" '"+q+"'"+","
-                        i+=1
-                        if i == 10:
-                            i=0
+                        c+=1
+                        if c == 9:
+                            c=0
                             String+="\n"
-                    String+=']\n'
-                String+="]"
+                    String+='\n'
+
                 ax=fig.add_subplot()
                 ax.set_title(String, fontsize=2.4)
                 ax.margins(0.15)
