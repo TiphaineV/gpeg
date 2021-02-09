@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import networkx as nwx
 import scipy.sparse as sparse
 
+
 class Vertice:
     def __init__(self,idv:int,originalId:int,file,Vtype:str,movies=None):
         self.id=idv
@@ -180,8 +181,8 @@ class Graph_bi:
             
         return q_new
     
-    def Enumerate(self,EL:list,s:int,h:int,a:int):
-        self.Output()
+    def Enumerate(self,EL:list,s:int,h:int,a:int,pdf=None):
+        self.Output(pdf)
         for x in self.minus(self.q):
             p=self.add(self.q,x)
             Test=copy.deepcopy(self)
@@ -193,47 +194,77 @@ class Graph_bi:
                         if x not in EL:
                             self=copy.deepcopy(Test)
                             EL.append(x)
-                            self.Enumerate(EL=EL,s=s,h=h,a=a)
+                            self.Enumerate(EL=EL,s=s,h=h,a=a,pdf=pdf)
             Test=None
                     
 
 
-    def Output(self):
-        #s=toStringPattern(self.q)
-        print('\nCore pattern: ',self.q,'\n')
-        G1 = nwx.Graph()
-        nodelist=[]
-        labels={}
-        ids={}
-        idx=0
-        for v in self.V[0]:
-            ids[str(v.id)+'V1']=idx
-            G1.add_node(idx,bipartite=0)
-            nodelist.append(idx)
-            labels[idx]=str(v.id)
-            idx+=1
+    def Output(self,pdf=None):
+            #s=toStringPattern(self.q)
+            #print('\nCore pattern: ',self.q,'\n')
+            G1 = nwx.Graph()
+            nodelist=[]
+            labels={}
+            ids={}
+            idx=0
+            for v in self.V[0]:
+                ids[str(v.id)+'V1']=idx
+                G1.add_node(idx,bipartite=0)
+                nodelist.append(idx)
+                labels[idx]=str(v.id)
+                idx+=1
 
-        for v in self.V[1]:
-            ids[str(v.id)+'V2']=idx
-            G1.add_node(idx,bipartite=1)
-            nodelist.append(idx)
-            labels[idx]=v.title
-            idx+=1
+            for v in self.V[1]:
+                ids[str(v.id)+'V2']=idx
+                G1.add_node(idx,bipartite=1)
+                nodelist.append(idx)
+                labels[idx]=v.title
+                idx+=1
+
+            for i in range(len(self.edges.row)):
+
+                G1.add_edge(ids[str(self.edges.row[i])+'V1'],ids[str(self.edges.col[i])+'V2'])
+                
+                
             
+                
+            fig=plt.figure(figsize=(3,3))
+            
+            top_nodes = {n for n, d in G1.nodes(data=True) if d["bipartite"] == 0}
+            bottom_nodes = set(G1) - top_nodes
+            pos = nwx.bipartite_layout(G1,top_nodes)
+            nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[:len(self.V[0])],node_color='c',node_size=8)
+            nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[len(self.V[0]):],node_color='y',node_size=8)
+            nwx.draw_networkx_edges(G1,pos,width=0.02)
+            nwx.draw_networkx_labels(G1, pos, labels, font_size=1.5)
 
-        for i in range(len(self.edges.row)):
 
-            G1.add_edge(ids[str(self.edges.row[i])+'V1'],ids[str(self.edges.col[i])+'V2'])
-    
-        top_nodes = {n for n, d in G1.nodes(data=True) if d["bipartite"] == 0}
-        bottom_nodes = set(G1) - top_nodes
-        pos = nwx.bipartite_layout(G1,top_nodes)
-        nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[:len(self.V[0])],node_color='c')
-        nwx.draw_networkx_nodes(G1,pos,nodelist=nodelist[len(self.V[0]):],node_color='y')
-        nwx.draw_networkx_edges(G1,pos)
-        nwx.draw_networkx_labels(G1, pos, labels, font_size=12)
+            if pdf==None:
+                print('\nCore pattern: ',self.q,'\n')
+                plt.show()
 
-        plt.show() 
+            else:
+                ax=None
+                String='Core Pattern:\n['
+                i=0
+                for pat in self.q:
+                    String+='['
+                    for q in pat:
+                        String+=" '"+q+"'"+","
+                        i+=1
+                        if i == 10:
+                            i=0
+                            String+="\n"
+                    String+=']\n'
+                String+="]"
+                ax=fig.add_subplot()
+                ax.set_title(String, fontsize=2.4)
+                ax.margins(0.15)
+                pdf.savefig()
+                ax=None
+
+            plt.close()
+            
             
              
     def getVerticeV1(self,idv:int):
