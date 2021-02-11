@@ -1,22 +1,12 @@
 '''
 Trivial Recommender System
 '''
-
-#%% Modules
-# standard
 import numpy as np
 
-# personal
-from _recSystems import _Clf
-from fastGraph import Graph
-from features import NodeFeatures
-import pandas as pd
-
-#%% Trivial Recommendation System
 class TrivialClf(_Clf):
-    def __init__(self, df, adj):
-        super().__init__(df)
-        self.adj = adj
+    def __init__(self, df, adj, likeThr):
+        self.set_featFncts()
+        super().__init__(df,adj, likeThr, RANDOM_SEED= None)
         pass
 
     def set_featFncts(self):
@@ -31,8 +21,5 @@ class TrivialClf(_Clf):
         self.xTrain, self.X_u, self.X_m = self._get_feature_matrix(edges)
         pass
 
-    def _predict_known(self, xTestKnown):
-        return xTestKnown['xu0'] < xTestKnown['xm0']
-
-if __name__ =='__main__':
-    pass
+    def _predict_known(self, xTestKnown, dType):
+        return likeThr < xTestKnown['xm0']
