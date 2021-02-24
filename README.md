@@ -2,11 +2,10 @@
 
 ## Recommendation system based on a graph
 
-The goal of this project is to develop an accurate movie/books recommender system based on user tastes. 
+The goal of this project is to develop an accurate movie recommender system based on user tastes and to be able to explain its decisions.
 
 ## Data sets 
 
-Goodreads : https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/books. \
 MovieLens : https://grouplens.org/datasets/movielens/
 
 ## Graph Structure
