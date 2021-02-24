@@ -9,12 +9,44 @@ import subprocess
 
 userMovieData_byChunk = pd.read_csv('../Data/userMovieData_small.csv', chunksize= int(1e6))
 
+
 s0=time.time()
 graph = GraphExtract(userMovieData_byChunk)
 s1=time.time()
-print("Graph made in ",s1-s0," s")
+print("Graph made in ",s1-s0," s\n")
 
 print("\nExtracting graph: ")
+s0=time.time()
+gOrgn=graph.extract(4,899,100)
+s1=time.time()
+print("Graph made in ",s1-s0," s\n")
+
+'''print("\nExtracting graph: ")
+s0=time.time()
+g=graph.extract(4,899,1000)
+s1=time.time()
+print("Graph made in ",s1-s0," s\n")'''
+
+print("Cleaning previous pdf")
+subprocess.call("./cleaning.sh")
+print("Cleaned\n")
+
+print("\nEnumerating gOrgn with h=a=6 ")
+s0=time.time()
+with PdfPages('gOringin_h=6_a=6.pdf') as pdf:
+    gOrgn.Enumerate(EL=[],s=1,h=2,a=2,pdf=pdf,mode='OriginLink')
+s1=time.time()
+print("Graph enumerated in ",s1-s0," s\n")
+
+'''print("\nEnumerating g with h=a=2 ")
+s0=time.time()
+with PdfPages('g_h=2_a=2.pdf') as pdf:
+    gOrgn.Enumerate(EL=[],s=1,h=2,a=2,pdf=pdf)
+s1=time.time()
+print("Graph enumerated in ",s1-s0," s\n")'''
+
+
+'''print("\nExtracting graph: ")
 s0=time.time()
 g10=graph.extract(4,899,10)
 s1=time.time()
@@ -79,4 +111,4 @@ s0=time.time()
 with PdfPages('10NofN_h=4_a=4.pdf') as pdf:
     g10NofN.Enumerate(EL=[],s=1,h=4,a=4,pdf=pdf)
 s1=time.time()
-print("Graph enumerated in ",s1-s0," s\n")  
+print("Graph enumerated in ",s1-s0," s\n")'''
