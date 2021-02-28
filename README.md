@@ -7,3 +7,7 @@ The goal of this project is to develop an accurate movie recommender system base
 ## Data sets 
 
 MovieLens : https://grouplens.org/datasets/movielens/
+
+## Recommendation
+
+A visualisation of how the recommendation systems work is proposed in the notebooks graph_small.ipynb (MovieLens 100k) and graph_heavy.ipynb (MovieLens 10M).
